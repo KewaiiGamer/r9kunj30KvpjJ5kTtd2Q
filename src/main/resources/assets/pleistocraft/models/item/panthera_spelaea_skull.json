@@ -1,0 +1,6 @@
+{
+    "parent": "pleistocraft:item/defaultitem",
+    "textures": {
+        "layer0": "pleistocraft:items/panthera_spelaea_skull"
+    }
+}

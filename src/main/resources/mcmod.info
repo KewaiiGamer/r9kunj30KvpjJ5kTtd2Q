@@ -1,0 +1,16 @@
+[
+{
+  "modid": "pleistocraft",
+  "name": "Pleisto-Craft",
+  "description": "This mod adds alot of prehistoric animals, Reptiles Mammals and birds from the pleistocene epoch, you find old bones and fossils, and from this little pieces, you will find the DNA, and work alot, until you'll have a living magnificent animal. You could discover old species and build labs and enclosures for your animals. This is the Giants Of the Ice Age mod.",
+  "version": "0.0.1",
+  "mcversion": "1.8.9",
+  "url": "http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/wip-mods/2577116",
+  "updateUrl": "",
+  "authorList": ["LeonelSaberTooth"],
+  "credits": "Elseytd, wakkytabbaky, mariot7 - Coders | Nathan, dom, zeinner, fluffy, oceansss, jayZX535 - Texture Artists/Modelers",
+  "logoFile": "assets/pleistocraft/logo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]

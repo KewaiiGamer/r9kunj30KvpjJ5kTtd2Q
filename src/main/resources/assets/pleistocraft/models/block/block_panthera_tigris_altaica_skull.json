@@ -1,0 +1,10 @@
+{
+    "parent": "minecraft:block/cube",
+    "textures": {
+        "south": "pleistocraft:blocks/block_panthera_tigris_altaica_skull",
+        "east": "pleistocraft:blocks/block_panthera_tigris_altaica_skull",
+        "west": "pleistocraft:blocks/block_panthera_tigris_altaica_skull",
+        "north": "pleistocraft:blocks/block_panthera_tigris_altaica_skull",
+        "particle": "pleistocraft:blocks/block_panthera_tigris_altaica_skull"
+    }
+}

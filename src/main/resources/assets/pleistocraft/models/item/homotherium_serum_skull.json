@@ -1,0 +1,6 @@
+{
+    "parent": "pleistocraft:item/defaultitem",
+    "textures": {
+        "layer0": "pleistocraft:items/homotherium_serum_skull"
+    }
+}

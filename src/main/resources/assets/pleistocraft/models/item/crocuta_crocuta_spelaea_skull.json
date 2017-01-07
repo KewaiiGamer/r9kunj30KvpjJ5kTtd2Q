@@ -1,0 +1,6 @@
+{
+    "parent": "pleistocraft:item/defaultitem",
+    "textures": {
+        "layer0": "pleistocraft:items/crocuta_crocuta_spelaea_skull"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "parent": "minecraft:block/cube",
+    "textures": {
+        "south": "pleistocraft:blocks/block_smilodon_populator_skull",
+        "east": "pleistocraft:blocks/block_smilodon_populator_skull",
+        "west": "pleistocraft:blocks/block_smilodon_populator_skull",
+        "north": "pleistocraft:blocks/block_smilodon_populator_skull",
+        "particle": "pleistocraft:blocks/block_smilodon_populator_skull"
+    }
+}

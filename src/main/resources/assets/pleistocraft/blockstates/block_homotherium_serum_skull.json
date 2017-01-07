@@ -1,0 +1,9 @@
+{
+    "variants": {
+        "facing=normal": { "model": "pleistocraft:block_homotherium_serum_skull" },
+        "facing=north": { "model": "pleistocraft:block_homotherium_serum_skull" },
+        "facing=south": { "model": "pleistocraft:block_homotherium_serum_skull" },
+        "facing=east": { "model": "pleistocraft:block_homotherium_serum_skull" },
+        "facing=west": { "model": "pleistocraft:block_homotherium_serum_skull" }
+    }
+}

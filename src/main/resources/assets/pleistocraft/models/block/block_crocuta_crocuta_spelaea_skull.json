@@ -1,0 +1,10 @@
+{
+    "parent": "minecraft:block/cube",
+    "textures": {
+        "south": "pleistocraft:blocks/block_crocuta_crocuta_spelaea_skull",
+        "east": "pleistocraft:blocks/block_crocuta_crocuta_spelaea_skull",
+        "west": "pleistocraft:blocks/block_crocuta_crocuta_spelaea_skull",
+        "north": "pleistocraft:blocks/block_crocuta_crocuta_spelaea_skull",
+        "particle": "pleistocraft:blocks/block_crocuta_crocuta_spelaea_skull"
+    }
+}
