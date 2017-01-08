@@ -14,9 +14,10 @@ public class TileEntityPantheraAtroxSkull extends TileEntity{
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
 	super.writeToNBT(nbttagcompound);
 	nbttagcompound.setInteger("facing", facing);
+	return nbttagcompound;
 	}
 
 	public int getFacing() {

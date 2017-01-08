@@ -1,12 +1,10 @@
 package com.elseytd.pleistocraft.utils;
 
+import com.elseytd.pleistocraft.registries.ItemsRegistry;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.elseytd.pleistocraft.Main;
-import com.elseytd.pleistocraft.registries.ItemsRegistry;
 
 public class CreativeTabUtil extends CreativeTabs{
 	public CreativeTabUtil(String tabLabel){

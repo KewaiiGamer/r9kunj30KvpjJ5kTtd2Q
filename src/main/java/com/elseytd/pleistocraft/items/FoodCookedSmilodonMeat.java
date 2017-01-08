@@ -1,7 +1,6 @@
 package com.elseytd.pleistocraft.items;
 
 import com.elseytd.pleistocraft.Main;
-
 import net.minecraft.item.ItemFood;
 
 public class FoodCookedSmilodonMeat extends ItemFood {
@@ -11,5 +10,4 @@ public class FoodCookedSmilodonMeat extends ItemFood {
 		this.setUnlocalizedName(name);
 		this.setCreativeTab(Main.PleistoCraft);
 	}
-
 }

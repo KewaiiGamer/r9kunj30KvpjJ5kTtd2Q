@@ -1,28 +1,32 @@
 package com.elseytd.pleistocraft.registries;
 
-import java.util.Random;
-
-import net.minecraft.entity.EntityList;
+import com.elseytd.pleistocraft.Main;
+import com.elseytd.pleistocraft.blocks.entities.*;
+import com.elseytd.pleistocraft.entitys.EntitySmilodonPopulator;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import com.elseytd.pleistocraft.Main;
-import com.elseytd.pleistocraft.blocks.entities.TileEntitySmilodonPopulatorSkull;
-import com.elseytd.pleistocraft.blocks.entities.TileEntityCanisDirusSkull;
-import com.elseytd.pleistocraft.blocks.entities.TileEntityCrocutaCrocutaSpelaeaSkull;
-import com.elseytd.pleistocraft.blocks.entities.TileEntityHomotheriumSerumSkull;
-import com.elseytd.pleistocraft.blocks.entities.TileEntityPantheraAtroxSkull;
-import com.elseytd.pleistocraft.blocks.entities.TileEntityPantheraSpelaeaSkull;
-import com.elseytd.pleistocraft.blocks.entities.TileEntityPantheraTigrisAltaicaSkull;
-import com.elseytd.pleistocraft.entitys.EntitySmilodonPopulator;
+import java.util.Random;
 
 
 public class EntitiesRegistry {
-	
-	public static void init(){
-		registerEntities(EntitySmilodonPopulator.class, "Smilodon_Populator", 10782798, 8351561);
+
+	static EntityRegistry.EntityRegistration entityRegistration;
+
+
+	/** This class needs to be cleaned up
+	 *
+	 */
+	public static void init() {
+		int id = 1;
+		registerEntities(EntitySmilodonPopulator.class, 1513	, "Smilodon_Populator", 10782798, 8351561);
+		/*
+		EntityRegistry.registerModEntity(EntitySmilodonPopulator.class, "Simlodon_Populator", id++, Main.instance, 64, 3, true, 0x996600, 0x00ff00);
+		EntityRegistry.addSpawn(EntitySmilodonPopulator.class, 5, 1, 1, EnumCreatureType.CREATURE, Biomes.PLAINS, Biomes.COLD_TAIGA);
+		EntityList.ENTITY_EGGS.put(Integer.toString(id++), new EntityList.EntityEggInfo(Integer.toString(id++), 0x996600 , 0x00ff00));
+		*/
 		GameRegistry.registerTileEntity(TileEntitySmilodonPopulatorSkull.class, "TileEntitySmilodonPopulatorSkulls");
 		GameRegistry.registerTileEntity(TileEntityHomotheriumSerumSkull.class, "TileEntityHomotheriumSkulls");
 		GameRegistry.registerTileEntity(TileEntityPantheraAtroxSkull.class, "TileEntityPantheraAtroxSkulls");
@@ -31,17 +35,17 @@ public class EntitiesRegistry {
 		GameRegistry.registerTileEntity(TileEntityCrocutaCrocutaSpelaeaSkull.class, "TileEntityCrocutaCrocutaSpelaeaSkulls");
 		GameRegistry.registerTileEntity(TileEntityCanisDirusSkull.class, "TileEntityCanisDirusSkulls");
 	}
-	
+
 	@SuppressWarnings("deprecation")
-	public static void registerEntities(Class entityClass, String name, int maincolor, int subcolor){
-		int entityId = EntityRegistry.findGlobalUniqueEntityId();
+	public static void registerEntities(Class entityClass, int ID, String name, int maincolor, int subcolor) {
+
 		long x = name.hashCode();
 		Random random = new Random(x);
-		
-		//EntityRegistry.addSpawn(entityClass, 5, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.forest, BiomeGenBase.coldTaiga);
-		
-		EntityRegistry.registerGlobalEntityID(entityClass, name, entityId);
-		EntityRegistry.registerModEntity(entityClass, name, entityId, Main.instance, 64, 1, true);
-		EntityList.entityEggs.put(Integer.valueOf(entityId), new EntityList.EntityEggInfo(entityId, maincolor, subcolor));
+
+		EntityRegistry.addSpawn(entityClass, 100, 10, 10, EnumCreatureType.CREATURE, Biomes.PLAINS, Biomes.COLD_TAIGA);
+
+		EntityRegistry.registerModEntity(entityClass, name, ID, Main.instance, 64, 1, true);
+		EntityRegistry.registerEgg(entityClass, maincolor, subcolor);
+		//EntityList.ENTITY_EGGS.put(Integer.toString(ID), new EntityList.EntityEggInfo(Integer.toString(ID), maincolor, subcolor));
 	}
 }

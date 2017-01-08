@@ -1,7 +1,6 @@
 package com.elseytd.pleistocraft.items;
 
-import java.util.List;
-
+import com.elseytd.pleistocraft.Main;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -9,7 +8,7 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import com.elseytd.pleistocraft.Main;
+import java.util.List;
 
 public class ToolSmilodonPopulatorFangSword extends ItemSword {
 		
@@ -33,5 +32,4 @@ public class ToolSmilodonPopulatorFangSword extends ItemSword {
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced){
 		//tooltip.add("If you want something here on any item, let me know.");
     }
-	
 }

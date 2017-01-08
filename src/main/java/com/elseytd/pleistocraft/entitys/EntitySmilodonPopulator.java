@@ -1,22 +1,14 @@
 package com.elseytd.pleistocraft.entitys;
 
+import com.elseytd.pleistocraft.registries.ItemsRegistry;
+import com.elseytd.pleistocraft.utils.Tools;
+import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAttackOnCollide;
-import net.minecraft.entity.ai.EntityAIFollowOwner;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILeapAtTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMate;
-import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
-import net.minecraft.entity.ai.EntityAIPanic;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
+import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -26,24 +18,27 @@ import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.pathfinding.PathNavigateGround;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import com.elseytd.pleistocraft.registries.ItemsRegistry;
-import com.elseytd.pleistocraft.utils.Tools;
+import javax.annotation.Nullable;
 
 public class EntitySmilodonPopulator extends EntityTameable {
 
@@ -55,7 +50,10 @@ public class EntitySmilodonPopulator extends EntityTameable {
     private float prevTimeWolfIsShaking;
     private int mode = 0;//0 - move freely, 1 - follow, 2-stay
     private boolean issaddled;
-    
+    private static final DataParameter<Boolean> BEGGING = EntityDataManager.<Boolean>createKey(EntityWolf.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Float> DATA_HEALTH_ID = EntityDataManager.<Float>createKey(EntityWolf.class, DataSerializers.FLOAT);
+    private static final DataParameter<Integer> COLLAR_COLOR = EntityDataManager.<Integer>createKey(EntityWolf.class, DataSerializers.VARINT);
+
     public EntitySmilodonPopulator(World worldIn) {
         super(worldIn);
         if (this.isChild()) {
@@ -64,12 +62,12 @@ public class EntitySmilodonPopulator extends EntityTameable {
             this.setSize(0.8F, 1.6F);
         }
         int i = 0;
-        ((PathNavigateGround) this.getNavigator()).setAvoidsWater(true);
+//      ((PathNavigateGround) this.getNavigator()).setAvoidsWater(true);
         this.tasks.addTask(i++, new EntityAISwimming(this));
         this.tasks.addTask(i++, this.aiSit);
         this.tasks.addTask(i++, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
         this.tasks.addTask(i++, new EntityAILeapAtTarget(this, 0.4F));
-        this.tasks.addTask(i++, new EntityAIAttackOnCollide(this, 1.0D, true));
+    //      this.tasks.addTask(i++, new EntityAIAttackOnCollide(this, 1.0D, true));
         this.tasks.addTask(i++, new EntityAIMate(this, 1.0D));
         this.tasks.addTask(i++, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(i++, new EntityAIWatchClosest(this, EntityPlayer.class, 12.0F));
@@ -85,12 +83,12 @@ public class EntitySmilodonPopulator extends EntityTameable {
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(40.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(50.3D);
-        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage);
-        this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(8.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(30.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).setBaseValue(5.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(50.3D);
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(5.0D);
     }
 
     @Override
@@ -108,7 +106,7 @@ public class EntitySmilodonPopulator extends EntityTameable {
         int i = Tools.randint(0, 2);
 
         for (int k = 0; k < i; ++k) {
-            this.dropItem(Items.bone, 1);
+            this.dropItem(Items.BONE, 1);
         }
 
         i = Tools.randint(1, 3);
@@ -136,7 +134,7 @@ public class EntitySmilodonPopulator extends EntityTameable {
      * @return
      */
     @Override
-    public boolean interact(EntityPlayer player) {
+    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack itemStack) {
         ItemStack itemstack = player.inventory.getCurrentItem();
         if (!player.isSneaking()) {
             if (this.isTamed()) {
@@ -144,8 +142,10 @@ public class EntitySmilodonPopulator extends EntityTameable {
                     if (itemstack.getItem() instanceof ItemFood) {
                         ItemFood itemfood = (ItemFood) itemstack.getItem();
 
-                        if (itemfood.isWolfsFavoriteMeat() && this.dataWatcher.getWatchableObjectFloat(18) < 30.0F) {
-                            if (itemstack != new ItemStack(Items.rotten_flesh) && itemstack != new ItemStack(ItemsRegistry.raw_smilodon_meat) && itemstack != new ItemStack(ItemsRegistry.cooked_smilodon_meat)) {
+                        if (itemfood.isWolfsFavoriteMeat() &&
+                                //this.dataWatcherList.getWatchableObjectFloat(18) < 30.0F) {
+                        this.dataManager.get(DATA_HEALTH_ID) < 30.0F) {
+                            if (itemstack != new ItemStack(Items.ROTTEN_FLESH) && itemstack != new ItemStack(ItemsRegistry.raw_smilodon_meat) && itemstack != new ItemStack(ItemsRegistry.cooked_smilodon_meat)) {
                                 if (!player.capabilities.isCreativeMode) {
                                     --itemstack.stackSize;
                                 }
@@ -158,16 +158,16 @@ public class EntitySmilodonPopulator extends EntityTameable {
                             }
                             return true;
                         }
-                    } else if (itemstack.getItem() == Items.saddle) {
+                    } else if (itemstack.getItem() == Items.SADDLE) {
                         if (!this.worldObj.isRemote && !this.isSaddled()) {
                             this.addSaddle();
                         }
                     }
-                } else if (this.worldObj.isRemote || this.riddenByEntity != null && this.riddenByEntity != player) {
+                } else if (this.worldObj.isRemote || !(this.isRidingOrBeingRiddenBy(player)) && !(this.isRidingOrBeingRiddenBy(null))) {
 
                 } else {
                     if (!this.isChild() && this.isSaddled()) {
-                        player.mountEntity(this);
+                        this.mountTo(player);
                         return true;
                     }
                 }
@@ -178,7 +178,7 @@ public class EntitySmilodonPopulator extends EntityTameable {
                     this.navigator.clearPathEntity();
                     this.setAttackTarget((EntityLivingBase) null);
                 }
-            } else if (itemstack != null && itemstack.getItem() == Items.beef && !this.isAngry()) {
+            } else if (itemstack != null && itemstack.getItem() == Items.BEEF && !this.isAngry()) {
                 if (!player.capabilities.isCreativeMode) {
                     --itemstack.stackSize;
                 }
@@ -193,7 +193,7 @@ public class EntitySmilodonPopulator extends EntityTameable {
                         this.navigator.clearPathEntity();
                         this.setAttackTarget((EntityLivingBase) null);
                         this.setHealth(40.0F);
-                        this.setOwnerId(player.getUniqueID().toString());
+                        this.setOwnerId(player.getUniqueID());
                         this.playTameEffect(true);
                         this.worldObj.setEntityState(this, (byte) 7);
                     } else {
@@ -208,25 +208,37 @@ public class EntitySmilodonPopulator extends EntityTameable {
             if (!this.worldObj.isRemote && this.isTamed()) {
                 switch (mode) {
                     case 0:
-                        player.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "Set to 'follow' mode."));
+                        player.addChatMessage(new TextComponentString(ChatFormatting.GOLD + "Set to 'follow' mode."));
                         this.aiSit.setSitting(false);
                         mode = 1;
                         break;
                     case 1:
-                        player.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "Set to 'stay' mode."));
+                        player.addChatMessage(new TextComponentString(ChatFormatting.GOLD + "Set to 'stay' mode."));
                         this.aiSit.setSitting(true);
                         mode = 2;
                         break;
                     case 2:
-                        player.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "Set to 'move freely' mode."));
+                        player.addChatMessage(new TextComponentString(ChatFormatting.GOLD + "Set to 'move freely' mode."));
                         this.aiSit.setSitting(false);
                         mode = 0;
                         break;
                 }
             }
         }
-        return super.interact(player);
+        return super.processInteract(player, hand, itemStack);
     }
+
+    private void mountTo(EntityPlayer player)
+    {
+        player.rotationYaw = this.rotationYaw;
+        player.rotationPitch = this.rotationPitch;
+
+        if (!this.worldObj.isRemote)
+        {
+            player.startRiding(this);
+        }
+    }
+
 
     public boolean isSaddled(){
         return this.issaddled;
@@ -269,19 +281,20 @@ public class EntitySmilodonPopulator extends EntityTameable {
      *
      * @return
      */
+    /*
     @Override
-    protected String getLivingSound() {
+    protected SoundEvent getLivingSound() {
         return null;
     }
-
+*/
     /**
      * Returns the sound this mob makes when it is hurt.
      *
      * @return
      */
     @Override
-    protected String getHurtSound() {
-        return null;
+    protected SoundEvent getHurtSound() {
+        return SoundEvents.ENTITY_WOLF_HURT;
     }
 
     /**
@@ -290,8 +303,8 @@ public class EntitySmilodonPopulator extends EntityTameable {
      * @return
      */
     @Override
-    protected String getDeathSound() {
-        return null;
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.ENTITY_WOLF_DEATH;
     }
 
     @Override
@@ -299,7 +312,7 @@ public class EntitySmilodonPopulator extends EntityTameable {
         boolean flag = entityIn.attackEntityFrom(
                 DamageSource.causeMobDamage(this),
                 (float) ((int) this.getEntityAttribute(
-                        SharedMonsterAttributes.attackDamage)
+                        SharedMonsterAttributes.ATTACK_DAMAGE)
                 .getAttributeValue()));
 
         if (flag) {
@@ -330,20 +343,24 @@ public class EntitySmilodonPopulator extends EntityTameable {
 
     @Override
     protected void updateAITasks() {
-        this.dataWatcher.updateObject(18, this.getHealth());
+        //this.dataWatcher.update(18, this.getHealth());
+        this.dataManager.register(DATA_HEALTH_ID, Float.valueOf(this.getHealth()));
     }
 
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataWatcher.addObject(18, this.getHealth());
-        this.dataWatcher.addObject(19, (byte) 0);
-        this.dataWatcher.addObject(20, (byte) EnumDyeColor.RED.getMetadata());
+        //this.dataWatcher.addObject(18, this.getHealth());
+        this.dataManager.register(DATA_HEALTH_ID, Float.valueOf(this.getHealth()));
+        this.dataManager.register(BEGGING, Boolean.valueOf(false));
+        this.dataManager.register(COLLAR_COLOR, Integer.valueOf(EnumDyeColor.RED.getDyeDamage()));
+        //this.dataWatcher.addObject(19, (byte) 0);
+        //this.dataWatcher.addObject(20, (byte) EnumDyeColor.RED.getMetadata());
     }
 
     @Override
     protected void playStepSound(BlockPos pos, Block blockIn) {
-        this.playSound("mob.wolf.step", 0.15F, 1.0F);
+        this.playSound(SoundEvents.ENTITY_WOLF_STEP, 0.15F, 1.0F);
     }
 
     /**
@@ -382,10 +399,10 @@ public class EntitySmilodonPopulator extends EntityTameable {
             this.setAngry(false);
         }
         if (!this.worldObj.isRemote && this.isAngry()) {
-            this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.5D);
+            this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
             this.setSprinting(isSprinting());
         } else if (!this.worldObj.isRemote && !this.isAngry()) {
-            this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.3D);
+            this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3D);
             this.setSprinting(isSprinting());
         }
     }
@@ -411,10 +428,7 @@ public class EntitySmilodonPopulator extends EntityTameable {
             this.prevTimeWolfIsShaking = 0.0F;
         } else if ((this.isWet || this.isShaking) && this.isShaking) {
             if (this.timeWolfIsShaking == 0.0F) {
-                this.playSound(
-                        "mob.wolf.shake",
-                        this.getSoundVolume(),
-                        (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+                this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
             }
 
             this.prevTimeWolfIsShaking = this.timeWolfIsShaking;
@@ -535,9 +549,9 @@ public class EntitySmilodonPopulator extends EntityTameable {
     @Override
     public void setTamed(boolean tamed) {
         super.setTamed(tamed);
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(30.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(8.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(50.3D);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(50.3D);
     }
 
     @SideOnly(Side.CLIENT)
@@ -554,10 +568,8 @@ public class EntitySmilodonPopulator extends EntityTameable {
 
     @SideOnly(Side.CLIENT)
     public float getTailRotation() {
-        return this.isAngry() ? 1.5393804F
-                : (this.isTamed() ? (0.55F - (20.0F - this.dataWatcher
-                        .getWatchableObjectFloat(18)) * 0.02F)
-                        * (float) Math.PI : ((float) Math.PI / 5F));
+        return this.isAngry() ? 1.5393804F : (this.isTamed() ? (0.55F - (20.0F - this.dataManager.get(DATA_HEALTH_ID).floatValue() * 0.02F)) * (float) Math.PI : ((float) Math.PI / 5F));
+        //getWatchableObjectFloat(18)) * 0.02F) * (float) Math.PI : ((float) Math.PI / 5F));
     }
 
     /**
@@ -590,7 +602,8 @@ public class EntitySmilodonPopulator extends EntityTameable {
      * @return
      */
     public boolean isAngry() {
-        return (this.dataWatcher.getWatchableObjectByte(16) & 2) != 0;
+        //return (this.dataWatcher.getWatchableObjectByte(16) & 2) != 0;
+        return (((Byte)this.dataManager.get(TAMED)).byteValue() & 2) != 0;
     }
 
     /**
@@ -599,29 +612,35 @@ public class EntitySmilodonPopulator extends EntityTameable {
      * @param angry
      */
     public void setAngry(boolean angry) {
-        byte b0 = this.dataWatcher.getWatchableObjectByte(16);
+        //byte b0 = this.dataManager.getWatchableObjectByte(16);
+        byte b0 = this.dataManager.get(TAMED);
 
         if (angry) {
-            this.dataWatcher.updateObject(16, (byte) (b0 | 2));
+            //this.dataWatcher.updateObject(16, (byte) (b0 | 2));
+            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 | 2)));
         } else {
-            this.dataWatcher.updateObject(16, (byte) (b0 & -3));
+            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 & -3)));
+            //this.dataWatcher.updateObject(16, (byte) (b0 & -3));
         }
     }
 
     public EnumDyeColor getCollarColor() {
-        return EnumDyeColor.byDyeDamage(this.dataWatcher
-                .getWatchableObjectByte(20) & 15);
+        //return EnumDyeColor.byDyeDamage(this.dataWatcher.getWatchableObjectByte(20) & 15);
+        return EnumDyeColor.byDyeDamage(this.dataManager.get(COLLAR_COLOR).intValue() & 15);
     }
 
     public void setCollarColor(EnumDyeColor collarcolor) {
-        this.dataWatcher.updateObject(20, (byte) (collarcolor.getDyeDamage() & 15));
+        //this.dataWatcher.updateObject(20, (byte) (collarcolor.getDyeDamage() & 15));
+        this.dataManager.set(COLLAR_COLOR, Integer.valueOf(collarcolor.getDyeDamage()));
     }
 
     public void setBegging(boolean beg) {
         if (beg) {
-            this.dataWatcher.updateObject(19, (byte) 1);
+            //this.dataWatcher.updateObject(19, (byte) 1);
+            this.dataManager.set(BEGGING, Boolean.valueOf(true));
         } else {
-            this.dataWatcher.updateObject(19, (byte) 0);
+            //this.dataWatcher.updateObject(19, (byte) 0);
+            this.dataManager.set(BEGGING, Boolean.valueOf(false));
         }
     }
 
@@ -644,7 +663,8 @@ public class EntitySmilodonPopulator extends EntityTameable {
     }
 
     public boolean isBegging() {
-        return this.dataWatcher.getWatchableObjectByte(19) == 1;
+        //return this.dataManager.getWatchableObjectByte(19) == 1;
+        return ((Boolean)this.dataManager.get(BEGGING)).booleanValue();
     }
 
     /**
@@ -674,8 +694,8 @@ public class EntitySmilodonPopulator extends EntityTameable {
     }
 
     @Override
-    public boolean allowLeashing() {
-        return !this.isAngry() && super.allowLeashing();
+    public boolean canBeLeashedTo(EntityPlayer player) {
+        return !this.isAngry() && super.canBeLeashedTo(player);
     }
 
     /**
@@ -686,13 +706,13 @@ public class EntitySmilodonPopulator extends EntityTameable {
      */
     @Override
     public void moveEntityWithHeading(float strafe, float forward) {
-        if (this.riddenByEntity != null && this.riddenByEntity instanceof EntityLivingBase) {
-            this.prevRotationYaw = this.rotationYaw = this.riddenByEntity.rotationYaw;
-            this.rotationPitch = this.riddenByEntity.rotationPitch * 0.5F;
+        if (this.getRidingEntity() != null && this.getRidingEntity() instanceof EntityLivingBase) {
+            this.prevRotationYaw = this.rotationYaw = this.getRidingEntity().rotationYaw;
+            this.rotationPitch = this.getRidingEntity().rotationPitch * 0.5F;
             this.setRotation(this.rotationYaw, this.rotationPitch);
             this.rotationYawHead = this.renderYawOffset = this.rotationYaw;
-            strafe = ((EntityLivingBase) this.riddenByEntity).moveStrafing * 0.5F;
-            forward = ((EntityLivingBase) this.riddenByEntity).moveForward;
+            strafe = ((EntityLivingBase) this.getRidingEntity()).moveStrafing * 0.5F;
+            forward = ((EntityLivingBase) this.getRidingEntity()).moveForward;
 
             if (forward <= 0.0F) {
                 forward *= 0.25F;
@@ -702,7 +722,7 @@ public class EntitySmilodonPopulator extends EntityTameable {
             this.jumpMovementFactor = this.getAIMoveSpeed() * 0.1F;
 
             if (!this.worldObj.isRemote) {
-                this.setAIMoveSpeed((float) this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue());
+                this.setAIMoveSpeed((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
                 super.moveEntityWithHeading(strafe, forward);
             }
 

@@ -1,28 +1,31 @@
 package com.elseytd.pleistocraft.blocks;
 
-import java.util.Random;
-
+import com.elseytd.pleistocraft.Reference;
 import com.elseytd.pleistocraft.blocks.entities.TileEntityCanisDirusSkull;
 import com.elseytd.pleistocraft.registries.ItemsRegistry;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Random;
 
 public class BlockCanisDirusSkull extends BlockContainer {
 
@@ -30,6 +33,7 @@ public class BlockCanisDirusSkull extends BlockContainer {
 	private int meta;
 	private int least_quantity;
 	private int most_quantity;
+	private Block block;
 	
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
@@ -40,10 +44,13 @@ public class BlockCanisDirusSkull extends BlockContainer {
         this.least_quantity = 1;
         this.most_quantity = 1;
 		this.setUnlocalizedName("block_canis_dirus_skull");
+		this.setRegistryName(Reference.MOD_ID + ":" + "block_canis_dirus_skull");
 		this.setCreativeTab(null);
 		this.setHardness(0F);
 		this.setResistance(10.0F);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		GameRegistry.register(this);
+		GameRegistry.register(new ItemBlock(this), getRegistryName());
 	}
 
 
@@ -53,12 +60,12 @@ public class BlockCanisDirusSkull extends BlockContainer {
 	}
 
 	@Override
-	public int getRenderType() {
-		return -1;
+	public EnumBlockRenderType getRenderType(IBlockState state) {
+        return EnumBlockRenderType.MODEL;
 	}
 
 	@Override
-	public boolean isOpaqueCube() {
+	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 
@@ -69,13 +76,13 @@ public class BlockCanisDirusSkull extends BlockContainer {
 			Block block2 = worldIn.getBlockState(pos.west()).getBlock();
 			Block block3 = worldIn.getBlockState(pos.east()).getBlock();
 			EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
-			if (enumfacing == EnumFacing.NORTH && block.isFullBlock()&& !block1.isFullBlock()) {
+			if (enumfacing == EnumFacing.NORTH && block.isFullBlock(state)&& !block1.isFullBlock(state)) {
 				enumfacing = EnumFacing.SOUTH;
-			} else if (enumfacing == EnumFacing.SOUTH && block1.isFullBlock()&& !block.isFullBlock()) {
+			} else if (enumfacing == EnumFacing.SOUTH && block1.isFullBlock(state)&& !block.isFullBlock(state)) {
 				enumfacing = EnumFacing.NORTH;
-			} else if (enumfacing == EnumFacing.WEST && block2.isFullBlock()&& !block3.isFullBlock()) {
+			} else if (enumfacing == EnumFacing.WEST && block2.isFullBlock(state)&& !block3.isFullBlock(state)) {
 				enumfacing = EnumFacing.EAST;
-			} else if (enumfacing == EnumFacing.EAST && block3.isFullBlock()&& !block2.isFullBlock()) {
+			} else if (enumfacing == EnumFacing.EAST && block3.isFullBlock(state)&& !block2.isFullBlock(state)) {
 				enumfacing = EnumFacing.WEST;
 			}
 			worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing),2);
@@ -83,7 +90,7 @@ public class BlockCanisDirusSkull extends BlockContainer {
 	}
 
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos,EnumFacing facing, float hitX, float hitY, float hitZ, int meta,EntityLivingBase placer) {
+	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		return this.getDefaultState().withProperty(FACING,placer.getHorizontalFacing().getOpposite());
 	}
 
@@ -96,7 +103,8 @@ public class BlockCanisDirusSkull extends BlockContainer {
 			facedte.setFacing(facing);
 			System.out.println("PLACED");
 			System.out.println(facing);
-			worldIn.markBlockForUpdate(pos);
+			worldIn.notifyBlockUpdate(pos, state, state, 3);
+			worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
 		}
 	}
 
@@ -118,7 +126,7 @@ public class BlockCanisDirusSkull extends BlockContainer {
 				facing = 1;
 			}
 			facedte.setFacing(facing);
-			worldIn.markBlockForUpdate(pos);
+			worldIn.notifyBlockUpdate(pos,state, state, 3);
 		}
 		return true;
 	}
@@ -140,8 +148,9 @@ public class BlockCanisDirusSkull extends BlockContainer {
 		return ((EnumFacing) state.getValue(FACING)).getIndex();
 	}
 
-	protected BlockState createBlockState() {
-		return new BlockState(this, new IProperty[] { FACING });
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, new IProperty[] { FACING });
 	}
 
 	@SideOnly(Side.CLIENT)

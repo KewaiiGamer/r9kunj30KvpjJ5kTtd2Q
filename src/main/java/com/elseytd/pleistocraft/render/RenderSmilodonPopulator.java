@@ -1,28 +1,35 @@
 package com.elseytd.pleistocraft.render;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.util.ResourceLocation;
-
-import com.elseytd.pleistocraft.Main;
 import com.elseytd.pleistocraft.Reference;
 import com.elseytd.pleistocraft.entitys.EntitySmilodonPopulator;
 import com.elseytd.pleistocraft.models.ModelSmilodonPopulator;
+import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.layers.LayerArrow;
+import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
+import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class RenderSmilodonPopulator extends RenderLiving {
+@SideOnly(Side.CLIENT)
+public class RenderSmilodonPopulator extends RenderLiving<EntitySmilodonPopulator> {
 
 	private static final ResourceLocation texture = new ResourceLocation(Reference.MOD_ID+":"+"textures/entitys/smilodon_populator.png");
 	
 	protected ModelSmilodonPopulator modelentity;
 	
-	public RenderSmilodonPopulator(ModelBase modelbase, float par2) {
+	/*public RenderSmilodonPopulator(ModelBase modelbase, float par2) {
 		super(Minecraft.getMinecraft().getRenderManager(),modelbase, par2);
 		modelentity = ((ModelSmilodonPopulator) mainModel);
-	}	
-
+	}*/
+	public RenderSmilodonPopulator(RenderManager render) {
+		super(render, new ModelSmilodonPopulator(), 0.5F);
+		this.addLayer(new LayerBipedArmor(this));
+		this.addLayer(new LayerHeldItem(this));
+		this.addLayer(new LayerArrow(this));
+	}
+/*
 	public void renderSmilodonPopulator(EntitySmilodonPopulator entity, double x, double y, double z, float u, float v){
 		super.doRender(entity,x,y,z,u,v);
 	}
@@ -34,11 +41,20 @@ public class RenderSmilodonPopulator extends RenderLiving {
 	public void doRender(Entity entity, double x, double y, double z, float u, float v){
 		renderSmilodonPopulator((EntitySmilodonPopulator)entity,x,y,z,u,v);
 	}
-	
+
 	@Override
 	protected ResourceLocation getEntityTexture(Entity entity) {
 		return texture;
 	}
 
 
+	@Override
+	protected ResourceLocation getEntityTexture(RenderSmilodonPopulator entity) {
+		return null;
+	}
+*/
+	@Override
+	protected ResourceLocation getEntityTexture(EntitySmilodonPopulator entity) {
+		return null;
+	}
 }

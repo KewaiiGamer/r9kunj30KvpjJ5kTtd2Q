@@ -1,17 +1,14 @@
 package com.elseytd.pleistocraft;
 
+import com.elseytd.pleistocraft.proxy.CommonProxy;
+import com.elseytd.pleistocraft.utils.CreativeTabUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import com.elseytd.pleistocraft.proxy.CommonProxy;
-import com.elseytd.pleistocraft.utils.CreativeTabUtil;
-import com.elseytd.pleistocraft.world.PermafrostWorldGenerator;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION)
 public class Main {

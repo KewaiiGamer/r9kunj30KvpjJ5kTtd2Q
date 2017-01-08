@@ -1,24 +1,25 @@
 package com.elseytd.pleistocraft.world;
 
-import java.util.Random;
 import com.elseytd.pleistocraft.registries.BlocksRegistry;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.BiomeGenSnow;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
+import java.util.Random;
+
 public class PermafrostWorldGenerator implements IWorldGenerator{
 
 		@Override
-		public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
-		    switch (world.provider.getDimensionId()) {
+		public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
+		    switch (world.provider.getDimension()) {
 		    case 0: //Overworld
-		    	BiomeGenBase biome = world.getBiomeGenForCoords(new BlockPos(chunkX, 64, chunkZ));
+		    	Biome biome = world.getBiomeForCoordsBody(new BlockPos(chunkX, 64, chunkZ));
 		    	if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.COLD))
 		    	{	 
 		    		this.runGenerator(this.gen_permafrost, world, random, chunkX, chunkZ, 40, 0, 64);
@@ -44,6 +45,4 @@ public class PermafrostWorldGenerator implements IWorldGenerator{
 		        generator.generate(world, rand, new BlockPos(x, y, z));
 		    }
 		}
-	  
-	  
-}
+	}

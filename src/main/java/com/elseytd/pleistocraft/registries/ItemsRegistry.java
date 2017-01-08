@@ -1,22 +1,9 @@
 package com.elseytd.pleistocraft.registries;
 
-import java.lang.reflect.Constructor;
-
+import com.elseytd.pleistocraft.Main;
+import com.elseytd.pleistocraft.items.*;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-
-import com.elseytd.pleistocraft.Main;
-import com.elseytd.pleistocraft.items.FoodCookedSmilodonMeat;
-import com.elseytd.pleistocraft.items.FoodRawSmilodonMeat;
-import com.elseytd.pleistocraft.items.ItemCanisDirusSkull;
-import com.elseytd.pleistocraft.items.ItemCrocutaCrocutaSpelaeaSkull;
-import com.elseytd.pleistocraft.items.ItemHomotheriumSerumSkull;
-import com.elseytd.pleistocraft.items.ItemPantheraAtroxSkull;
-import com.elseytd.pleistocraft.items.ItemPantheraSpelaeaSkull;
-import com.elseytd.pleistocraft.items.ItemPantheraTigrisAltaicaSkull;
-import com.elseytd.pleistocraft.items.ItemSmilodonPopulatorFang;
-import com.elseytd.pleistocraft.items.ItemSmilodonPopulatorSkull;
-import com.elseytd.pleistocraft.items.ToolSmilodonPopulatorFangSword;
 
 //Referenced in CommonProxy in PreInt
 
@@ -31,9 +18,19 @@ public final class ItemsRegistry {
 	public static Item asphalt_crumbs;
 	public static Item asphalt_fossil;
 	public static Item frozen_animal_tissue;
+	public static ItemSmilodonPopulatorFang smilodon_populator_fang1;
+	public static ToolSmilodonPopulatorFangSword smilodon_populator_fang_sword1;
+	public static ItemSmilodonPopulatorSkull smilodon_populator_skull1;
+	public static ItemHomotheriumSerumSkull homotherium_serum_skull1;
+	public static ItemPantheraAtroxSkull panthera_atrox_skull1;
+	public static ItemPantheraTigrisAltaicaSkull panthera_tigris_altaica_skull1;
+	public static ItemPantheraSpelaeaSkull panthera_spelaea_skull1;
+	public static ItemCrocutaCrocutaSpelaeaSkull crocuta_crocuta_spelaea_skull1;
+	public static ItemCanisDirusSkull canis_dirus_skull1;
+
 	public static Item smilodon_populator_fang;
 	public static Item smilodon_populator_fang_sword;
-	public static Item smilodon_populator_skull;	
+	public static Item smilodon_populator_skull;
 	public static Item homotherium_serum_skull;
 	public static Item panthera_atrox_skull;
 	public static Item panthera_tigris_altaica_skull;
@@ -61,6 +58,7 @@ public final class ItemsRegistry {
     	GameRegistry.registerItem(crocuta_crocuta_spelaea_skull = new ItemCrocutaCrocutaSpelaeaSkull("crocuta_crocuta_spelaea_skull"), "crocuta_crocuta_spelaea_skull");
     	GameRegistry.registerItem(canis_dirus_skull = new ItemCanisDirusSkull("canis_dirus_skull"), "canis_dirus_skull");
 
+    	//smilodon_populator_fang_sword1 = new ToolSmilodonPopulatorFangSword("smilodon_populator_fang_sword");
     }
     
     /**

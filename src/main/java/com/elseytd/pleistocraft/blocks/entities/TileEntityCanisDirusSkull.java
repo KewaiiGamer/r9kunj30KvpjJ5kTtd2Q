@@ -6,7 +6,9 @@ import net.minecraft.tileentity.TileEntity;
 public class TileEntityCanisDirusSkull extends TileEntity{
 	
 	public int facing;
-	
+
+
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 	super.readFromNBT(nbttagcompound);
@@ -14,9 +16,10 @@ public class TileEntityCanisDirusSkull extends TileEntity{
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
 	super.writeToNBT(nbttagcompound);
 	nbttagcompound.setInteger("facing", facing);
+	return nbttagcompound;
 	}
 
 	public int getFacing() {

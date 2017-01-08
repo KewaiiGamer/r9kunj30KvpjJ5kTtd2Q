@@ -1,8 +1,7 @@
 package com.elseytd.pleistocraft.items;
 
-import net.minecraft.item.Item;
-
 import com.elseytd.pleistocraft.Main;
+import net.minecraft.item.Item;
 
 public class ItemSmilodonPopulatorFang extends Item {
 		
