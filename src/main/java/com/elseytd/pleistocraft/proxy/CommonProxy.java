@@ -16,10 +16,11 @@ public class CommonProxy {
     public void preInit(FMLPreInitializationEvent e) {
     	ItemsRegistry.init();
     	BlocksRegistry.init();
+        EntitiesRegistry.init();
     }
 
     public void init(FMLInitializationEvent e) {
-    	EntitiesRegistry.init();
+
     	CraftingRegistry.init();
     	GameRegistry.registerWorldGenerator(new PermafrostWorldGenerator(), 1);
         //MinecraftForge.EVENT_BUS.register(new EventOnEntityCreated());

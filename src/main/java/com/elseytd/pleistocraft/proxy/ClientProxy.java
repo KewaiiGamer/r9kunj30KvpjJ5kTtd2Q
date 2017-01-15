@@ -1,5 +1,6 @@
 package com.elseytd.pleistocraft.proxy;
 
+import com.elseytd.pleistocraft.registries.EntitiesRegistry;
 import com.elseytd.pleistocraft.render.Renderer;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -9,6 +10,7 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void preInit(FMLPreInitializationEvent e){
 		super.preInit(e);
+		EntitiesRegistry.initModels();
 	}
 	@Override
 	public void init(FMLInitializationEvent e){

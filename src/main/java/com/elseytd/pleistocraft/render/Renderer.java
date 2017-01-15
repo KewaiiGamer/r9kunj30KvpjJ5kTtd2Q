@@ -3,7 +3,6 @@ package com.elseytd.pleistocraft.render;
 import com.elseytd.pleistocraft.Reference;
 import com.elseytd.pleistocraft.blocks.BlockAsphalt;
 import com.elseytd.pleistocraft.blocks.entities.*;
-import com.elseytd.pleistocraft.entitys.EntitySmilodonPopulator;
 import com.elseytd.pleistocraft.registries.BlocksRegistry;
 import com.elseytd.pleistocraft.registries.ItemsRegistry;
 import net.minecraft.block.Block;
@@ -11,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 public class Renderer {
 
@@ -56,7 +54,7 @@ public class Renderer {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySmilodonPopulatorSkull.class, new RenderSmilodonPopulatorSkull());
 
 		//Entitys
-		RenderingRegistry.registerEntityRenderingHandler(EntitySmilodonPopulator.class, RenderSmilodonPopulator::new);
+		//RenderingRegistry.registerEntityRenderingHandler(EntitySmilodonPopulatorkindaWorking.class, RenderSmilodonPopulator::new);
 	}
 	
 

@@ -1,6 +1,6 @@
 package com.elseytd.pleistocraft.models;
 
-import com.elseytd.pleistocraft.entitys.EntitySmilodonPopulator;
+import com.elseytd.pleistocraft.entitys.EntitySmilodonPopulatorkindaWorking;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -173,8 +173,8 @@ public class ModelSmilodonPopulatorSaddable extends ModelBase{
             Body.render(scale);	
             saddle.render(scale);
             GlStateManager.popMatrix();
-            EntitySmilodonPopulator e = (EntitySmilodonPopulator) entity;
-            if(e.isSaddled()){
+            EntitySmilodonPopulatorkindaWorking e = (EntitySmilodonPopulatorkindaWorking) entity;
+            if(e.isSmilodonSaddled()){
                 
             }
         }
@@ -205,7 +205,7 @@ public class ModelSmilodonPopulatorSaddable extends ModelBase{
     @Override
     public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float p_78086_2_, float p_78086_3_, float partialTickTime)
     {
-        EntitySmilodonPopulator entity = (EntitySmilodonPopulator)entitylivingbaseIn;
+        EntitySmilodonPopulatorkindaWorking entity = (EntitySmilodonPopulatorkindaWorking)entitylivingbaseIn;
 
         if (entity.isSitting()){
             

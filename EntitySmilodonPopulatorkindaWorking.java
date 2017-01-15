@@ -4,43 +4,25 @@ import com.elseytd.pleistocraft.registries.ItemsRegistry;
 import com.elseytd.pleistocraft.utils.Tools;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import java.util.UUID;
-import javax.annotation.Nullable;
-
-import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.inventory.GuiScreenHorseInventory;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.IJumpingMount;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.AnimalChest;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.IInventoryChangedListener;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -48,47 +30,36 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.management.PreYggdrasilConverter;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.datafix.DataFixer;
-import net.minecraft.util.datafix.FixTypes;
-import net.minecraft.util.datafix.walkers.ItemStackData;
-import net.minecraft.util.datafix.walkers.ItemStackDataLists;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class EntitySmilodonPopulator extends EntityTameable implements IInventoryChangedListener, IJumpingMount
-{
+import javax.annotation.Nullable;
+import java.util.UUID;
+
+public class EntitySmilodonPopulatorkindaWorking extends EntityTameable implements IInventoryChangedListener, IJumpingMount {
+
     private static final Predicate<Entity> IS_SMILODON_BREEDING = new Predicate<Entity>()
     {
         public boolean apply(@Nullable Entity p_apply_1_)
         {
-            return p_apply_1_ instanceof EntitySmilodonPopulator && ((EntitySmilodonPopulator)p_apply_1_).isBreeding();
+            return p_apply_1_ instanceof EntitySmilodonPopulatorkindaWorking && ((EntitySmilodonPopulatorkindaWorking)p_apply_1_).isBreeding();
         }
     };
-    private static final IAttribute JUMP_STRENGTH = (new RangedAttribute((IAttribute)null, "horse.jumpStrength", 0.7D, 0.0D, 2.0D)).setDescription("Jump Strength").setShouldWatch(true);
-    //private static final UUID ARMOR_MODIFIER_UUID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
-    private static final DataParameter<Byte> STATUS = EntityDataManager.<Byte>createKey(EntitySmilodonPopulator.class, DataSerializers.BYTE);
-    //private static final DataParameter<Integer> HORSE_TYPE = EntityDataManager.<Integer>createKey(EntitySmilodonPopulator.class, DataSerializers.VARINT);
-    //private static final DataParameter<Integer> HORSE_VARIANT = EntityDataManager.<Integer>createKey(EntitySmilodonPopulator.class, DataSerializers.VARINT);
-    private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.<Optional<UUID>>createKey(EntitySmilodonPopulator.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-    //private static final DataParameter<Integer> HORSE_ARMOR = EntityDataManager.<Integer>createKey(EntitySmilodonPopulator.class, DataSerializers.VARINT);
-    private static final String[] HORSE_TEXTURES = new String[] {"textures/entity/horse/horse_white.png", "textures/entity/horse/horse_creamy.png", "textures/entity/horse/horse_chestnut.png", "textures/entity/horse/horse_brown.png", "textures/entity/horse/horse_black.png", "textures/entity/horse/horse_gray.png", "textures/entity/horse/horse_darkbrown.png"};
-    private static final String[] HORSE_TEXTURES_ABBR = new String[] {"hwh", "hcr", "hch", "hbr", "hbl", "hgr", "hdb"};
-    private static final String[] HORSE_MARKING_TEXTURES = new String[] {null, "textures/entity/horse/horse_markings_white.png", "textures/entity/horse/horse_markings_whitefield.png", "textures/entity/horse/horse_markings_whitedots.png", "textures/entity/horse/horse_markings_blackdots.png"};
-    private static final String[] HORSE_MARKING_TEXTURES_ABBR = new String[] {"", "wo_", "wmo", "wdo", "bdo"};
-    //private final EntityAISkeletonRiders skeletonTrapAI = new EntityAISkeletonRiders(this);
-    private int mode = 0;//0 - move freely, 1 - follow, 2-stay
-    private Minecraft mc;
-    private int eatingHaystackCounter;
+    private static final DataParameter<Float> DATA_HEALTH_ID = EntityDataManager.<Float>createKey(EntitySmilodonPopulatorkindaWorking.class, DataSerializers.FLOAT);
+    private static final IAttribute JUMP_STRENGTH = (new RangedAttribute((IAttribute)null, "smilodon.jumpStrength", 0.7D, 0.0D, 2.0D)).setDescription("Jump Strength").setShouldWatch(true);
+    private static final DataParameter<Byte> STATUS = EntityDataManager.<Byte>createKey(EntitySmilodonPopulatorkindaWorking.class, DataSerializers.BYTE);
+    //private static final DataParameter<Integer> SMILODON_TYPE = EntityDataManager.<Integer>createKey(EntitySmilodonPopulatorkindaWorking.class, DataSerializers.VARINT);
+    //private static final DataParameter<Integer> SMILODON_VARIANT = EntityDataManager.<Integer>createKey(EntitySmilodonPopulatorkindaWorking.class, DataSerializers.VARINT);
+    private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.<Optional<UUID>>createKey(EntitySmilodonPopulatorkindaWorking.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+  //private static final DataParameter<Integer> SMILODON_ARMOR = EntityDataManager.<Integer>createKey(EntitySmilodonPopulatorkindaWorking.class, DataSerializers.VARINT);
+    private static final String[] SMILODON_TEXTURES = new String[] {"textures/entity/horse/horse_white.png", "textures/entity/horse/horse_creamy.png", "textures/entity/horse/horse_chestnut.png", "textures/entity/horse/horse_brown.png", "textures/entity/horse/horse_black.png", "textures/entity/horse/horse_gray.png", "textures/entity/horse/horse_darkbrown.png"};
+    private static final String[] SMILODON_TEXTURES_ABBR = new String[] {"hwh", "hcr", "hch", "hbr", "hbl", "hgr", "hdb"};
+    private static final String[] SMILODON_MARKING_TEXTURES = new String[] {null, "textures/entity/horse/horse_markings_white.png", "textures/entity/horse/horse_markings_whitefield.png", "textures/entity/horse/horse_markings_whitedots.png", "textures/entity/horse/horse_markings_blackdots.png"};
+    private static final String[] SMILODON_MARKING_TEXTURES_ABBR = new String[] {"", "wo_", "wmo", "wdo", "bdo"};
     private int openMouthCounter;
     private int jumpRearingCounter;
     public int tailCounter;
@@ -96,135 +67,89 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
     protected boolean smilodonJumping;
     private AnimalChest smilodonChest;
     private boolean hasReproduced;
-    /** "The higher this value, the more likely the smilodon is to be tamed next time a player rides it." */
     protected int temper;
     protected float jumpPower;
     private boolean allowStandSliding;
-    //private boolean skeletonTrap;
-    //private int skeletonTrapTime;
     private float headLean;
     private float prevHeadLean;
     private float rearingAmount;
     private float prevRearingAmount;
     private float mouthOpenness;
     private float prevMouthOpenness;
-    /** Used to determine the sound that the smilodon should make when it steps */
     private int gallopTime;
     private String texturePrefix;
-    private final String[] smilodonTexturesArray = new String[3];
+    private final String[] smilodonTexturesArray = new String[2];
     @SideOnly(Side.CLIENT)
     private boolean hasTexture;
-    private SoundEvent ambientSound;
-    private SoundEvent deathSound;
-    private SoundEvent hurtSound;
 
-    public EntitySmilodonPopulator(World worldIn)
+    public EntitySmilodonPopulatorkindaWorking(World worldIn)
     {
         super(worldIn);
-        //this.setSize(1.3964844F, 1.6F);
-        if (this.isChild()) {
-            this.setSize(1.5F, 0.8F);
-        } else {
-            this.setSize(0.8F, 1.6F);
-        }
+        this.setSize(1.3964844F, 1.6F);
         this.isImmuneToFire = false;
         this.setChested(false);
         this.stepHeight = 1.0F;
-        this.initSmilodonChest();
+        //this.initSmilodonChest();
+    }
+    protected void initEntityAI()
+    {
+        this.tasks.addTask(0, new EntityAISwimming(this));
+        this.tasks.addTask(1, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
+        this.tasks.addTask(1, new EntityAILeapAtTarget(this, 0.4F));
+        this.tasks.addTask(2, new EntityAIMate(this, 1.0D));
+        this.tasks.addTask(4, new EntityAIFollowParent(this, 1.0D));
+        this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 12.0F));
+        this.tasks.addTask(8, new EntityAILookIdle(this));
+        this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+        this.targetTasks.addTask(1, new EntityAIOwnerHurtTarget(this));
+        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[0]));
+
     }
 
-    @Override
-    protected void initEntityAI() {
-        int i = 0;
-//      ((PathNavigateGround) this.getNavigator()).setAvoidsWater(true);
-        this.tasks.addTask(i++, new EntityAISwimming(this));
-        //this.tasks.addTask(i++, this.aiSit);
-        this.tasks.addTask(i++, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
-        this.tasks.addTask(i++, new EntityAILeapAtTarget(this, 0.4F));
-        //      this.tasks.addTask(i++, new EntityAIAttackOnCollide(this, 1.0D, true));
-        this.tasks.addTask(i++, new EntityAIMate(this, 1.0D));
-        this.tasks.addTask(i++, new EntityAIWander(this, 1.0D));
-        this.tasks.addTask(i++, new EntityAIWatchClosest(this, EntityPlayer.class, 12.0F));
-        this.tasks.addTask(i++, new EntityAILookIdle(this));
-        i = 0;
-        this.targetTasks.addTask(i++, new EntityAIOwnerHurtByTarget(this));
-        this.targetTasks.addTask(i++, new EntityAIOwnerHurtTarget(this));
-        this.targetTasks.addTask(i++, new EntityAIHurtByTarget(this, true, new Class[0]));
-
-        this.setTamed(false);
-    }
     protected void entityInit()
     {
         super.entityInit();
         this.dataManager.register(STATUS, Byte.valueOf((byte)0));
-        //this.dataManager.register(HORSE_TYPE, Integer.valueOf(SmilodonType.HORSE.getOrdinal()));
+        //this.dataManager.register(SMILODON_TYPE, Integer.valueOf(HorseType.HORSE.getOrdinal()));
         //this.dataManager.register(HORSE_VARIANT, Integer.valueOf(0));
         this.dataManager.register(OWNER_UNIQUE_ID, Optional.<UUID>absent());
-        //this.dataManager.register(HORSE_ARMOR, Integer.valueOf(SmilodonArmorType.NONE.getOrdinal()));
-    }
+        //this.dataManager.register(HORSE_ARMOR, Integer.valueOf(HorseArmorType.NONE.getOrdinal()));
 
-    /**
-     * Copied from old entity
-     */
-
-
-    @Override
-    protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
-        int i = Tools.randint(0, 2);
-
-        for (int k = 0; k < i; ++k) {
-            this.dropItem(Items.BONE, 1);
-        }
-
-        i = Tools.randint(1, 3);
-
-        for (int k = 0; k < i; ++k) {
-            if (this.isBurning()) {
-                this.dropItem(ItemsRegistry.cooked_smilodon_meat, 1);
-            } else {
-                this.dropItem(ItemsRegistry.raw_smilodon_meat, 1);
-            }
-        }
-
-        i = Tools.randint(0, 1);
-
-        for (int k = 0; k < i; ++k) {
-            this.dropItem(ItemsRegistry.smilodon_populator_skull, 1);
-        }
     }
     /*
-    public void setType(SmilodonType armorType)
-
+    public void setType(HorseType armorType)
     {
-        this.dataManager.set(HORSE_TYPE, Integer.valueOf(armorType.getOrdinal()));
+        this.dataManager.set(SMILODON_TYPE, Integer.valueOf(armorType.getOrdinal()));
         this.resetTexturePrefix();
     }
+    */
+    /*
 
-    public SmilodonType getType()
+    public HorseType getType()
     {
-        return SmilodonType.getArmorType(((Integer)this.dataManager.get(HORSE_TYPE)).intValue());
+        return HorseType.getArmorType(((Integer)this.dataManager.get(HORSE_TYPE)).intValue());
     }
-
+    */
+    /*
     public void setSmilodonVariant(int variant)
     {
-        this.dataManager.set(HORSE_VARIANT, Integer.valueOf(variant));
+        this.dataManager.set(SMILODON_VARIANT, Integer.valueOf(variant));
         this.resetTexturePrefix();
     }
 
-    public int ro()
+    public int getSmilodonVariant()
     {
-        return ((Integer)this.dataManager.get(HORSE_VARIANT)).intValue();
+        return ((Integer)this.dataManager.get(SMILODON_VARIANT)).intValue();
     }
     */
 
-    /**
-     * Get the name of this object. For players this returns their username
-     */
+    /*
     public String getName()
     {
-        //return this.hasCustomName() ? this.getCustomNameTag() : this.getName();
-        return "Smilodon";
+        return this.hasCustomName() ? this.getCustomNameTag() : this.getType().getDefaultName().getUnformattedText();
     }
+    */
 
     private boolean getSmilodonWatchableBoolean(int p_110233_1_)
     {
@@ -244,8 +169,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
             this.dataManager.set(STATUS, Byte.valueOf((byte)(b0 & ~p_110208_1_)));
         }
     }
-
-    public boolean isAdultSmilodon()
+    public boolean isAdultHorse()
     {
         return !this.isChild();
     }
@@ -257,7 +181,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
 
     public boolean isRidable()
     {
-        return this.isAdultSmilodon();
+        return this.isAdultHorse();
     }
 
     @Nullable
@@ -276,9 +200,6 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         return 0.5F;
     }
 
-    /**
-     * "Sets the scale for an ageable entity according to the boolean parameter, which says if it's a child."
-     */
     public void setScaleForAge(boolean child)
     {
         if (child)
@@ -308,30 +229,21 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
 
     public boolean canBeLeashedTo(EntityPlayer player)
     {
-        return super.canBeLeashedTo(player);
+        return /*!this.getType().isUndead() &&*/super.canBeLeashedTo(player);
     }
 
-    protected void onLeashDistance(float p_142017_1_)
-    {
-        if (p_142017_1_ > 6.0F && this.isEatingHaystack())
-        {
-            this.setEatingHaystack(false);
-        }
-    }
 
     public boolean isChested()
     {
-        return this.getSmilodonWatchableBoolean(8);
+        return this.canBeChested() && this.getSmilodonWatchableBoolean(8);
     }
 
     /*
-    public SmilodonArmorType getSmilodonArmorType()
-
+    public HorseArmorType getHorseArmorType()
     {
-        return SmilodonArmorType.getByOrdinal(((Integer)this.dataManager.get(HORSE_ARMOR)).intValue());
+        return HorseArmorType.getByOrdinal(((Integer)this.dataManager.get(SMILODON_ARMOR)).intValue());
     }
     */
-
 
     public boolean isEatingHaystack()
     {
@@ -352,14 +264,11 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
     {
         return this.hasReproduced;
     }
-
-    /**
-     * Set smilodon armor stack (for example: new ItemStack(Items.iron_smilodon_armor))
-     */
-   /* public void setSmilodonArmorStack(ItemStack itemStackIn)
+    /*
+    public void setSmilodonArmorStack(ItemStack itemStackIn)
     {
         SmilodonArmorType smilodonarmortype = SmilodonArmorType.getByItemStack(itemStackIn);
-        this.dataManager.set(HORSE_ARMOR, Integer.valueOf(smilodonarmortype.getOrdinal()));
+        this.dataManager.set(SMILODON_ARMOR, Integer.valueOf(smilodonarmortype.getOrdinal()));
         this.resetTexturePrefix();
 
         if (!this.worldObj.isRemote)
@@ -369,12 +278,11 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
 
             if (i != 0)
             {
-                this.getEntityAttribute(SharedMonsterAttributes.ARMOR).applyModifier((new AttributeModifier(ARMOR_MODIFIER_UUID, "Smilodon armor bonus", (double)i, 0)).setSaved(false));
+                this.getEntityAttribute(SharedMonsterAttributes.ARMOR).applyModifier((new AttributeModifier(ARMOR_MODIFIER_UUID, "Horse armor bonus", (double)i, 0)).setSaved(false));
             }
         }
     }
     */
-
     public void setBreeding(boolean breeding)
     {
         this.setSmilodonWatchableBoolean(16, breeding);
@@ -412,6 +320,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         return i;
     }
 
+
     /**
      * Called when the entity is attacked.
      */
@@ -437,14 +346,14 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         return true;
     }
 
-    public void dropChests()
+    /*public void dropChests()
     {
         if (!this.worldObj.isRemote && this.isChested())
         {
             this.dropItem(Item.getItemFromBlock(Blocks.CHEST), 1);
             this.setChested(false);
         }
-    }
+    }*/
 
     private void eatingSmilodon()
     {
@@ -460,10 +369,9 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
     {
         if (distance > 1.0F)
         {
-            this.playSound(SoundEvents.ENTITY_HORSE_LAND, 0.4F, 1.0F);
+            this.playSound(SoundEvents.ENTITY_WOLF_STEP, 0.4F, 1.0F);
         }
 
-        int i = MathHelper.ceiling_float_int((distance * 0.5F - 3.0F) * damageMultiplier);
 
         if (i > 0)
         {
@@ -489,20 +397,21 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
     }
 
     /**
-     * Returns number of slots depending smilodon type
+     * Returns number of slots depending horse type
      */
     private int getChestSize()
     {
-        //SmilodonType smilodontype = this.getType();
-        return this.isChested() ? 17 : 2;
+        //HorseType horsetype = this.getType();
+        return this.isChested() ? 17 : 2;// && horsetype.canBeChested() ? 17 : 2;
     }
 
-    private void initSmilodonChest()
+    private void initHorseChest()
     {
-        AnimalChest animalchest = this.smilodonChest;
-        this.smilodonChest = new AnimalChest("SmilodonChest", this.getChestSize());
-        this.smilodonChest.setCustomName(this.getName());
+        //AnimalChest animalchest = this.smilodonChest;
+        //this.smilodonChest = new AnimalChest("SmilodonChest", this.getChestSize());
+        //this.smilodonChest.setCustomName(this.getName());
 
+        /*
         if (animalchest != null)
         {
             animalchest.removeInventoryChangeListener(this);
@@ -518,49 +427,48 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
                 }
             }
         }
-
-        this.smilodonChest.addInventoryChangeListener(this);
-        this.updateSmilodonSlots();
-        this.itemHandler = new net.minecraftforge.items.wrapper.InvWrapper(this.smilodonChest);
+        */
+        //this.smilodonChest.addInventoryChangeListener(this);
+        this.updateHorseSlots();
+        //this.itemHandler = new net.minecraftforge.items.wrapper.InvWrapper(this.smilodonChest);
     }
 
+    //private net.minecraftforge.items.IItemHandler itemHandler = null; // Initialized by initHorseChest above.
+
     /**
-     * Updates the items in the saddle and armor slots of the smilodon's inventory.
+     * Updates the items in the saddle and armor slots of the horse's inventory.
      */
-    private void updateSmilodonSlots()
+    private void updateHorseSlots()
     {
         if (!this.worldObj.isRemote)
         {
-            this.setSmilodonSaddled(this.smilodonChest.getStackInSlot(0) != null);
+            //this.setSmilodonSaddled(this.smilodonChest.getStackInSlot(0) != null);
 
-            /*if (this.isSmilodon())
+            /*if (this.getType().isHorse())
             {
                 this.setSmilodonArmorStack(this.smilodonChest.getStackInSlot(1));
             }
             */
         }
     }
-
-    /**
-     * Called by InventoryBasic.onInventoryChanged() on a array that is never filled.
-     */
     public void onInventoryChanged(InventoryBasic invBasic)
     {
-        //SmilodonArmorType smilodonarmortype = this.getSmilodonArmorType();
+
+        //HorseArmorType horsearmortype = this.getHorseArmorType();
         boolean flag = this.isSmilodonSaddled();
-        this.updateSmilodonSlots();
+        this.updateHorseSlots();
 
         if (this.ticksExisted > 20)
         {
-            /*if (smilodonarmortype == SmilodonArmorType.NONE && smilodonarmortype != this.getSmilodonArmorType())
+            /*
+            if (horsearmortype == HorseArmorType.NONE && horsearmortype != this.getHorseArmorType())
             {
                 this.playSound(SoundEvents.ENTITY_HORSE_ARMOR, 0.5F, 1.0F);
             }
-            else if (smilodonarmortype != this.getSmilodonArmorType())
+            else if (horsearmortype != this.getHorseArmorType())
             {
                 this.playSound(SoundEvents.ENTITY_HORSE_ARMOR, 0.5F, 1.0F);
-            }
-            */
+            }*/
 
             if (!flag && this.isSmilodonSaddled())
             {
@@ -578,7 +486,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         return super.getCanSpawnHere();
     }
 
-    protected EntitySmilodonPopulator getClosestSmilodon(Entity entityIn, double distance)
+    protected EntitySmilodonPopulatorkindaWorking getClosestSmilodon(Entity entityIn, double distance)
     {
         double d0 = Double.MAX_VALUE;
         Entity entity = null;
@@ -594,18 +502,17 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
             }
         }
 
-        return (EntitySmilodonPopulator)entity;
+        return (EntitySmilodonPopulatorkindaWorking) entity;
     }
 
-    public double getSmilodonJumpStrength()
-    {
+    public double getSmilodonJumpStrength() {
         return this.getEntityAttribute(JUMP_STRENGTH).getAttributeValue();
     }
 
     protected SoundEvent getDeathSound()
     {
         this.openSmilodonMouth();
-        return this.deathSound;
+        return this.getDeathSound();
     }
 
     protected SoundEvent getHurtSound()
@@ -617,7 +524,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
             this.makeSmilodonRear();
         }
 
-        return this.hurtSound;
+        return SoundEvents.ENTITY_WOLF_HURT;
     }
 
     public boolean isSmilodonSaddled()
@@ -625,7 +532,34 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         return this.getSmilodonWatchableBoolean(4);
     }
 
-    protected SoundEvent getAmbientSound()
+
+
+
+    @Override
+    protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
+        int i = Tools.randint(0, 2);
+
+        for (int k = 0; k < i; ++k) {
+            this.dropItem(Items.BONE, 1);
+        }
+
+        i = Tools.randint(1, 3);
+
+        for (int k = 0; k < i; ++k) {
+            if (this.isBurning()) {
+                this.dropItem(ItemsRegistry.cooked_smilodon_meat, 1);
+            } else {
+                this.dropItem(ItemsRegistry.raw_smilodon_meat, 1);
+            }
+        }
+
+        i = Tools.randint(0, 1);
+
+        for (int k = 0; k < i; ++k) {
+            this.dropItem(ItemsRegistry.smilodon_populator_skull, 1);
+        }
+    }
+/*    protected SoundEvent getAmbientSound()
     {
         this.openSmilodonMouth();
 
@@ -634,49 +568,20 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
             this.makeSmilodonRear();
         }
 
-        return this.ambientSound;
+        return this.getAmbientSound();
     }
 
-
+    */
 
     @Nullable
     protected SoundEvent getAngrySound()
     {
         this.openSmilodonMouth();
         this.makeSmilodonRear();
-        //SmilodonType smilodontype = this.getType();
-        //return smilodontype.isUndead() ? null : (smilodontype.hasMuleEars() ? SoundEvents.ENTITY_DONKEY_ANGRY : SoundEvents.ENTITY_HORSE_ANGRY);
-        return SoundEvents.ENTITY_WOLF_HOWL;
+        //HorseType horsetype = this.getType();
+        return SoundEvents.ENTITY_HORSE_ANGRY;
     }
 
-
-    /**
-     * Determines whether this wolf is angry or not.
-     *
-     * @return
-     */
-    public boolean isAngry() {
-        //return (this.dataWatcher.getWatchableObjectByte(16) & 2) != 0;
-        return (((Byte)this.dataManager.get(TAMED)).byteValue() & 2) != 0;
-    }
-
-    /**
-     * Sets whether this wolf is angry or not.
-     *
-     * @param angry
-     */
-    public void setAngry(boolean angry) {
-        //byte b0 = this.dataManager.getWatchableObjectByte(16);
-        byte b0 = this.dataManager.get(TAMED);
-
-        if (angry) {
-            //this.dataWatcher.updateObject(16, (byte) (b0 | 2));
-            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 | 2)));
-        } else {
-            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 & -3)));
-            //this.dataWatcher.updateObject(16, (byte) (b0 & -3));
-        }
-    }
     protected void playStepSound(BlockPos pos, Block blockIn)
     {
         SoundType soundtype = blockIn.getSoundType(worldObj.getBlockState(pos), worldObj, pos, this);
@@ -688,6 +593,8 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
 
         if (!blockIn.getDefaultState().getMaterial().isLiquid())
         {
+            //HorseType horsetype = this.getType();
+
             if (this.isBeingRidden())
             {
                 ++this.gallopTime;
@@ -716,7 +623,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
             }
         }
     }
-/*
+
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
@@ -724,24 +631,13 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
     }
-*/
 
-    @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(2D);
-        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(5.0D);
-    }
     /**
      * Will return how many at most can spawn in a chunk at once.
      */
     public int getMaxSpawnedInChunk()
     {
-        return 6;
+        return 2;
     }
 
     public int getMaxTemper()
@@ -765,10 +661,11 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         return 400;
     }
 
-    /*@SideOnly(Side.CLIENT)
+    /*
+    @SideOnly(Side.CLIENT)
     public boolean hasLayeredTextures()
     {
-        return this.getType() == SmilodonType.HORSE || this.getSmilodonArmorType() != SmilodonArmorType.NONE;
+        return this.getType() == HorseType.HORSE || this.getHorseArmorType() != HorseArmorType.NONE;
     }
     */
 
@@ -777,62 +674,50 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         this.texturePrefix = null;
     }
 
-    /*
     @SideOnly(Side.CLIENT)
-    /*
     public boolean hasTexture()
     {
         return this.hasTexture;
     }
-    */
 
-  /*  @SideOnly(Side.CLIENT)
+    @SideOnly(Side.CLIENT)
     private void setSmilodonTexturePaths()
     {
         this.texturePrefix = "smilodon/";
         this.smilodonTexturesArray[0] = null;
         this.smilodonTexturesArray[1] = null;
-        this.smilodonTexturesArray[2] = null;
-        SmilodonType smilodontype = this.getType();
-        int i = this.getSmilodonVariant();
+        //HorseType horsetype = this.getType();
+        //int i = this.getSmilodonVariant();
 
-        if (smilodontype == SmilodonType.HORSE)
+        int j = 255;
+        int k = 65280 >> 8;
+
+        if (j >= SMILODON_TEXTURES.length)
         {
-            int j = i & 255;
-            int k = (i & 65280) >> 8;
-
-            if (j >= HORSE_TEXTURES.length)
-            {
-                this.hasTexture = false;
-                return;
-            }
-
-            this.smilodonTexturesArray[0] = HORSE_TEXTURES[j];
-            this.texturePrefix = this.texturePrefix + HORSE_TEXTURES_ABBR[j];
-
-            if (k >= HORSE_MARKING_TEXTURES.length)
-            {
-                this.hasTexture = false;
-                return;
-            }
-
-            this.smilodonTexturesArray[1] = HORSE_MARKING_TEXTURES[k];
-            this.texturePrefix = this.texturePrefix + HORSE_MARKING_TEXTURES_ABBR[k];
-        }
-        else
-        {
-            this.smilodonTexturesArray[0] = "";
-            this.texturePrefix = this.texturePrefix + "_" + smilodontype + "_";
+            this.hasTexture = false;
+            return;
         }
 
-        SmilodonArmorType smilodonarmortype = this.getSmilodonArmorType();
-        this.smilodonTexturesArray[2] = smilodonarmortype.getTextureName();
-        this.texturePrefix = this.texturePrefix + smilodonarmortype.getHash();
-        this.hasTexture = true;
-    }
+        this.smilodonTexturesArray[0] = SMILODON_TEXTURES[j];
+        this.texturePrefix = this.texturePrefix + SMILODON_TEXTURES_ABBR[j];
 
-*/
-  /*
+        if (k >= SMILODON_MARKING_TEXTURES.length)
+        {
+            this.hasTexture = false;
+            return;
+        }
+
+        this.smilodonTexturesArray[1] = SMILODON_MARKING_TEXTURES[k];
+        this.texturePrefix = this.texturePrefix + SMILODON_MARKING_TEXTURES_ABBR[k];
+    } /*
+        this.smilodonTexturesArray[0] = "";
+        this.texturePrefix = this.texturePrefix + "_"; //+ horsetype + "_";
+        }
+    //HorseArmorType horsearmortype = this.getHorseArmorType();
+    //this.smilodonTexturesArray[2] = horsearmortype.getTextureName();
+    this.texturePrefix = this.texturePrefix; //+ horsearmortype.getHash();
+    this.hasTexture = true;*/
+
     @SideOnly(Side.CLIENT)
     public String getSmilodonTexture()
     {
@@ -854,34 +739,27 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
 
         return this.smilodonTexturesArray;
     }
-*/
+
     public void openGUI(EntityPlayer playerEntity)
     {
         if (!this.worldObj.isRemote && (!this.isBeingRidden() || this.isPassenger(playerEntity)) && this.isTame())
         {
             this.smilodonChest.setCustomName(this.getName());
-            //this.openGuiSmilodonInventory(this, this.smilodonChest);
+            //playerEntity.openGuiSmilodonInventory(this, this.smilodonChest);
         }
     }
 
-/*    public static void openGuiSmilodonInventory(EntitySmilodonPopulator smilodonPopulator, IInventory inventoryIn) {
-
-        this.mc.displayGuiScreen(new GuiScreenSmilodonInventory(EntityPlayerSP.inventory, inventoryIn, smilodonPopulator));
-    }/*
-    /*public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
     {
         if (stack != null && stack.getItem() == Items.SPAWN_EGG)
         {
             return super.processInteract(player, hand, stack);
         }
-        /*
         else if (!this.isTame())
         {
             return false;
         }
-        */
-/*
-        else if (this.isTame() && this.isAdultSmilodon() && player.isSneaking())
+        else if (this.isTame() && this.isAdultHorse() && player.isSneaking())
         {
             this.openGUI(player);
             return true;
@@ -892,112 +770,89 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         }
         else
         {
-            if (stack != null)
-            {
+            if (stack != null) {
+                if (this instanceof EntitySmilodonPopulatorkindaWorking) {
+                    //HorseArmorType horsearmortype = HorseArmorType.getByItemStack(stack);
 
-                //SmilodonArmorType smilodonarmortype = SmilodonArmorType.getByItemStack(stack);
-
-                //if (smilodonarmortype != SmilodonArmorType.NONE)
-                //{
-                if (!this.isTame())
-                {
-                    this.makeSmilodonRearWithSound();
+                    //if (horsearmortype != HorseArmorType.NONE)
+                    if (!this.isTame()) {
+                        this.makeSmilodonRearWithSound();
+                        return true;
+                    }
+                    this.openGUI(player);
                     return true;
                 }
 
-                this.openGUI(player);
-                return true;
-            }
-
                 boolean flag = false;
 
-                float f = 0.0F;
-                int i = 0;
-                int j = 0;
+            } else if (stack.getItem() == Items.BEEF && !this.isAngry()) {
+                if (!player.capabilities.isCreativeMode) {
+                    --stack.stackSize;
+                }
+                this.heal(3);
 
-                if (stack.getItem() == Items.BEEF) {
-                    f = 3.0F;
-                    i = 20;
-                    j = 3;
-                    if (this.isTame() && this.getGrowingAge() == 0 && !this.isInLove()) {
+                if (stack.stackSize <= 0) {
+                    player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack) null);
+                }
+              /*  }
+                    else if (stack.getItem() == Items.GOLDEN_CARROT)
+                    {
+                        f = 4.0F;
+                        i = 60;
+                        j = 5;
+
+                        if (this.isTame() && this.getGrowingAge() == 0)
+                        {
+                            flag = true;
+                            this.setInLove(player);
+                        }
+                    }
+                    else if (stack.getItem() == Items.GOLDEN_APPLE)
+                    {
+                        f = 10.0F;
+                        i = 240;
+                        j = 10;
+
+                        if (this.isTame() && this.getGrowingAge() == 0 && !this.isInLove())
+                        {
+                            flag = true;
+                            this.setInLove(player);
+                        }
+                    }
+
+                    if (this.getHealth() < this.getMaxHealth() && f > 0.0F)
+                    {
+                        this.heal(f);
                         flag = true;
-                        this.setInLove(player);
                     }
-                }
-                */
-                /*
-                else if (stack.getItem() == Items.SUGAR)
-                {
-                    f = 1.0F;
-                    i = 30;
-                    j = 3;
-                }
-                else if (Block.getBlockFromItem(stack.getItem()) == Blocks.HAY_BLOCK)
-                {
-                    f = 20.0F;
-                    i = 180;
-                }
-                else if (stack.getItem() == Items.APPLE)
-                {
-                    f = 3.0F;
-                    i = 60;
-                    j = 3;
-                }
-                else if (stack.getItem() == Items.GOLDEN_CARROT)
-                {
-                    f = 4.0F;
-                    i = 60;
-                    j = 5;
 
-                    if (this.isTame() && this.getGrowingAge() == 0)
+                    if (!this.isAdultHorse() && i > 0)
+                    {
+                        if (!this.worldObj.isRemote)
+                        {
+                            this.addGrowth(i);
+                        }
+
+                        flag = true;
+                    }
+
+                    if (j > 0 && (flag || !this.isTame()) && this.getTemper() < this.getMaxTemper())
                     {
                         flag = true;
-                        this.setInLove(player);
+
+                        if (!this.worldObj.isRemote)
+                        {
+                            this.increaseTemper(j);
+                        }
                     }
-                }
-                else if (stack.getItem() == Items.GOLDEN_APPLE)
-                {
-                    f = 10.0F;
-                    i = 240;
-                    j = 10;
-                    if (this.isTame() && this.getGrowingAge() == 0 && !this.isInLove())
+
+                    if (flag)
                     {
-                        flag = true;
-                        this.setInLove(player);
+                        this.eatingHorse();
                     }
-                }
-                */
-                /*
+                }*/
 
-                if (this.getHealth() < this.getMaxHealth() && f > 0.0F)
-                {
-                    this.heal(f);
-                    flag = true;
-                }
-                if (!this.isAdultSmilodon() && i > 0)
-                {
-                    if (!this.worldObj.isRemote)
-                    {
-                        this.addGrowth(i);
-                    }
-                    flag = true;
-                }
-
-                if (j > 0 && (flag || !this.isTame()) && this.getTemper() < this.getMaxTemper())
-                {
-                    flag = true;
-
-                    if (!this.worldObj.isRemote)
-                    {
-                        this.increaseTemper(j);
-                    }
-                }
-
-                if (flag)
-                {
-                    this.eatingSmilodon();
-                }
-                if (!this.isTame() && !flag)
+                if (!this.isTame())
                 {
                     if (stack.interactWithEntity(player, this, hand))
                     {
@@ -1008,27 +863,19 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
                     return true;
                 }
 
-                if (!flag && !this.isChested() && stack.getItem() == Item.getItemFromBlock(Blocks.CHEST))
+                /*
+                if (!flag && this.canBeChested() && !this.isChested() && stack.getItem() == Item.getItemFromBlock(Blocks.CHEST))
                 {
                     this.setChested(true);
                     this.playSound(SoundEvents.ENTITY_DONKEY_CHEST, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
                     flag = true;
-                    this.initSmilodonChest();
+                    this.initHorseChest();
                 }
+                */
 
-                if (!flag && this.isRidable() && !this.isSmilodonSaddled() && stack.getItem() == Items.SADDLE)
+                if (this.isRidable() && !this.isSmilodonSaddled() && stack.getItem() == Items.SADDLE)
                 {
                     this.openGUI(player);
-                    return true;
-                }
-
-                if (flag)
-                {
-                    if (!player.capabilities.isCreativeMode)
-                    {
-                        --stack.stackSize;
-                    }
-
                     return true;
                 }
             }
@@ -1050,105 +897,23 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
                 return super.processInteract(player, hand, stack);
             }
         }
-*/
-    /**
-     * old Smilodon Method
-     *
-     */
+    }
+    public boolean isAngry() {
+        //return (this.dataWatcher.getWatchableObjectByte(16) & 2) != 0;
+        return (((Byte)this.dataManager.get(TAMED)).byteValue() & 2) != 0;
+    }
 
+    public void setAngry(boolean angry) {
+        //byte b0 = this.dataManager.getWatchableObjectByte(16);
+        byte b0 = this.dataManager.get(TAMED);
 
-    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack itemStack) {
-        ItemStack itemstack = player.inventory.getCurrentItem();
-        if (!player.isSneaking()) {
-            if (this.isTamed()) {
-                if (itemstack != null) {
-                    if (itemstack.getItem() instanceof ItemFood) {
-                        ItemFood itemfood = (ItemFood) itemstack.getItem();
-
-                        if (itemfood.isWolfsFavoriteMeat() &&
-                                //this.dataWatcherList.getWatchableObjectFloat(18) < 30.0F) {
-                                this.getHealth() < 30.0F) {
-                            if (itemstack != new ItemStack(Items.ROTTEN_FLESH) && itemstack != new ItemStack(ItemsRegistry.raw_smilodon_meat) && itemstack != new ItemStack(ItemsRegistry.cooked_smilodon_meat)) {
-                                if (!player.capabilities.isCreativeMode) {
-                                    --itemstack.stackSize;
-                                }
-
-                                this.heal(3);
-
-                                if (itemstack.stackSize <= 0) {
-                                    player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack) null);
-                                }
-                            }
-                            return true;
-                        }
-                    } else if (itemstack.getItem() == Items.SADDLE) {
-                        if (!this.worldObj.isRemote && !this.isSmilodonSaddled()) {
-                            this.setSmilodonJumping(true);
-                        }
-                    }
-                } else if (this.worldObj.isRemote || !(this.isRidingOrBeingRiddenBy(player)) && !(this.isRidingOrBeingRiddenBy(null))) {
-
-                } else {
-                    if (!this.isChild() && this.isSmilodonSaddled()) {
-                        this.mountTo(player);
-                        return true;
-                    }
-                }
-
-                if (this.isOwner(player) && !this.worldObj.isRemote && !this.isBreedingItem(itemstack)) {
-                    //this.aiSit.setSitting(!this.isSitting());
-                    this.isJumping = false;
-                    this.navigator.clearPathEntity();
-                    this.setAttackTarget((EntityLivingBase) null);
-                }
-            } else if (itemstack != null && itemstack.getItem() == Items.BEEF && !this.isAngry()) {
-                if (!player.capabilities.isCreativeMode) {
-                    --itemstack.stackSize;
-                }
-
-                if (itemstack.stackSize <= 0) {
-                    player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack) null);
-                }
-
-                if (!this.worldObj.isRemote) {
-                    if (this.rand.nextInt(4) == 0) {
-                        this.setTamed(true);
-                        this.navigator.clearPathEntity();
-                        this.setAttackTarget((EntityLivingBase) null);
-                        this.setHealth(40.0F);
-                        this.setOwnerId(player.getUniqueID());
-                        this.playTameEffect(true);
-                        this.worldObj.setEntityState(this, (byte) 7);
-                    } else {
-                        this.playTameEffect(false);
-                        this.worldObj.setEntityState(this, (byte) 6);
-                    }
-                }
-
-                return true;
-            }
+        if (angry) {
+            //this.dataWatcher.updateObject(16, (byte) (b0 | 2));
+            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 | 2)));
         } else {
-            if (!this.worldObj.isRemote && this.isTamed()) {
-                switch (mode) {
-                    case 0:
-                        player.addChatMessage(new TextComponentString(ChatFormatting.GOLD + "Set to 'follow' mode."));
-                        //this.aiSit.setSitting(false);
-                        mode = 1;
-                        break;
-                    case 1:
-                        player.addChatMessage(new TextComponentString(ChatFormatting.GOLD + "Set to 'stay' mode."));
-                        //this.aiSit.setSitting(true);
-                        mode = 2;
-                        break;
-                    case 2:
-                        player.addChatMessage(new TextComponentString(ChatFormatting.GOLD + "Set to 'move freely' mode."));
-                        //this.aiSit.setSitting(false);
-                        mode = 0;
-                        break;
-                }
-            }
+            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 & -3)));
+            //this.dataWatcher.updateObject(16, (byte) (b0 & -3));
         }
-        return super.processInteract(player, hand, itemStack);
     }
     private void mountTo(EntityPlayer player)
     {
@@ -1192,16 +957,12 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
     {
         super.onDeath(cause);
 
-        if (!this.worldObj.isRemote)
+        /*if (!this.worldObj.isRemote)
         {
             this.dropChestItems();
         }
+        */
     }
-
-    /**
-     * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
-     * use this to react to sunlight and start to burn.
-     */
     public void onLivingUpdate()
     {
         if (this.rand.nextInt(200) == 0)
@@ -1218,20 +979,22 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
                 this.heal(1.0F);
             }
 
-            if (!this.isEatingHaystack() && !this.isBeingRidden() && this.rand.nextInt(300) == 0 && this.worldObj.getBlockState(new BlockPos(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY) - 1, MathHelper.floor_double(this.posZ))).getBlock() == Blocks.GRASS)
+           /* if (!this.isEatingHaystack() && !this.isBeingRidden() && this.rand.nextInt(300) == 0 && this.worldObj.getBlockState(new BlockPos(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY) - 1, MathHelper.floor_double(this.posZ))).getBlock() == Blocks.GRASS)
             {
                 this.setEatingHaystack(true);
             }
 
-            if (this.isEatingHaystack() && ++this.eatingHaystackCounter > 50)
+            if (this.isEatingHaystack() && ++this.eatingHaystackCounter > 50))
             {
-                this.eatingHaystackCounter = 0;
+                //this.eatingHaystackCounter = 0;
                 this.setEatingHaystack(false);
             }
 
-            if (this.isBreeding() && !this.isAdultSmilodon() && !this.isEatingHaystack())
+            */
+
+            if (this.isBreeding() && !this.isAdultHorse() /*&& !this.isEatingHaystack())*/)
             {
-                EntitySmilodonPopulator entitysmilodon = this.getClosestSmilodon(this, 16.0D);
+                EntitySmilodonPopulatorkindaWorking entitysmilodon = this.getClosestSmilodon(this, 16.0D);
 
                 if (entitysmilodon != null && this.getDistanceSqToEntity(entitysmilodon) > 4.0D)
                 {
@@ -1289,7 +1052,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
 
         this.prevHeadLean = this.headLean;
 
-        if (this.isEatingHaystack())
+        /*if (this.isEatingHaystack())
         {
             this.headLean += (1.0F - this.headLean) * 0.4F + 0.05F;
 
@@ -1298,16 +1061,15 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
                 this.headLean = 1.0F;
             }
         }
-        else
+        */
+
+
+        this.headLean += (0.0F - this.headLean) * 0.4F - 0.05F;
+
+        if (this.headLean < 0.0F)
         {
-            this.headLean += (0.0F - this.headLean) * 0.4F - 0.05F;
-
-            if (this.headLean < 0.0F)
-            {
-                this.headLean = 0.0F;
-            }
+            this.headLean = 0.0F;
         }
-
         this.prevRearingAmount = this.rearingAmount;
 
         if (this.isRearing())
@@ -1364,11 +1126,12 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
     }
 
     /**
-     * Return true if the smilodon entity ready to mate. (no rider, not riding, tame, adult, not steril...)
+     * Return true if the horse entity ready to mate. (no rider, not riding, tame, adult, not steril...)
      */
     private boolean canMate()
     {
-        return !this.isBeingRidden() && !this.isRiding() && this.isTame() && this.isAdultSmilodon() && this.canMate() && this.getHealth() >= this.getMaxHealth() && this.isInLove();}
+        return !this.isBeingRidden() && !this.isRiding() && this.isTame() && this.isAdultHorse() && this.canMate() && this.getHealth() >= this.getMaxHealth() && this.isInLove();
+    }
 
     public void setEatingHaystack(boolean p_110227_1_)
     {
@@ -1405,11 +1168,14 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         }
     }
 
+    /*
     public void dropChestItems()
     {
-        this.dropItemsInChest(this, this.smilodonChest);
+        this.dropItemsInChest(this, this.horseChest);
         this.dropChests();
     }
+    */
+    /*
 
     private void dropItemsInChest(Entity entityIn, AnimalChest animalChestIn)
     {
@@ -1426,6 +1192,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
             }
         }
     }
+    */
 
     public boolean setTamedBy(EntityPlayer player)
     {
@@ -1528,12 +1295,13 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         }
     }
 
-    public static void registerFixesSmilodon(DataFixer fixer)
+    /*public static void registerFixesHorse(DataFixer fixer)
     {
-        EntityLiving.registerFixesMob(fixer, "EntitySmilodonPopulator");
-        fixer.registerWalker(FixTypes.ENTITY, new ItemStackDataLists("EntitySmilodonPopulator", new String[] {"Items"}));
-        fixer.registerWalker(FixTypes.ENTITY, new ItemStackData("EntitySmilodonPopulator", new String[] {"ArmorItem", "SaddleItem"}));
+        EntityLiving.registerFixesMob(fixer, "EntityHorse");
+        fixer.registerWalker(FixTypes.ENTITY, new ItemStackDataLists("EntityHorse", new String[] {"Items"}));
+        fixer.registerWalker(FixTypes.ENTITY, new ItemStackData("EntityHorse", new String[] {"ArmorItem", "SaddleItem"}));
     }
+    */
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
@@ -1542,14 +1310,13 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
     {
         super.writeEntityToNBT(compound);
         compound.setBoolean("EatingHaystack", this.isEatingHaystack());
-        compound.setBoolean("ChestedSmilodon", this.isChested());
+        compound.setBoolean("ChestedHorse", this.isChested());
         compound.setBoolean("HasReproduced", this.getHasReproduced());
         compound.setBoolean("Bred", this.isBreeding());
-        //compound.setInteger("Type", this.getType().getOrdinal());
+        //compound.setInteger("Type", this.getOrdinal());
         //compound.setInteger("Variant", this.getSmilodonVariant());
         compound.setInteger("Temper", this.getTemper());
         compound.setBoolean("Tame", this.isTame());
-        compound.setInteger("Mode", this.mode);
         //compound.setBoolean("SkeletonTrap", this.isSkeletonTrap());
         //compound.setInteger("SkeletonTrapTime", this.skeletonTrapTime);
 
@@ -1558,6 +1325,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
             compound.setString("OwnerUUID", this.getOwnerUniqueId().toString());
         }
 
+        /*
         if (this.isChested())
         {
             NBTTagList nbttaglist = new NBTTagList();
@@ -1577,17 +1345,22 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
 
             compound.setTag("Items", nbttaglist);
         }
+        */
 
-        if (this.smilodonChest.getStackInSlot(1) != null)
+        /*
+        if (this.horseChest.getStackInSlot(1) != null)
         {
-            compound.setTag("ArmorItem", this.smilodonChest.getStackInSlot(1).writeToNBT(new NBTTagCompound()));
+            compound.setTag("ArmorItem", this.horseChest.getStackInSlot(1).writeToNBT(new NBTTagCompound()));
         }
+        */
 
-        if (this.smilodonChest.getStackInSlot(0) != null)
+        /*if (this.smilodonChest.getStackInSlot(0) != null)
         {
             compound.setTag("SaddleItem", this.smilodonChest.getStackInSlot(0).writeToNBT(new NBTTagCompound()));
         }
+        */
     }
+
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
@@ -1597,11 +1370,10 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         super.readEntityFromNBT(compound);
         this.setEatingHaystack(compound.getBoolean("EatingHaystack"));
         this.setBreeding(compound.getBoolean("Bred"));
-        this.setChested(compound.getBoolean("ChestedSmilodon"));
+        this.setChested(compound.getBoolean("ChestedHorse"));
         this.setHasReproduced(compound.getBoolean("HasReproduced"));
-        //this.setType(SmilodonType.getArmorType(compound.getInteger("Type")));
-        //this.setSmilodonVariant(compound.getInteger("Variant"));
-        this.setmode(compound.getInteger("Mode"));
+        //this.setType(HorseType.getArmorType(compound.getInteger("Type")));
+        //this.setHorseVariant(compound.getInteger("Variant"));
         this.setTemper(compound.getInteger("Temper"));
         this.setSmilodonTamed(compound.getBoolean("Tame"));
         //this.setSkeletonTrap(compound.getBoolean("SkeletonTrap"));
@@ -1633,7 +1405,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         if (this.isChested())
         {
             NBTTagList nbttaglist = compound.getTagList("Items", 10);
-            this.initSmilodonChest();
+            this.initHorseChest();
 
             for (int i = 0; i < nbttaglist.tagCount(); ++i)
             {
@@ -1646,17 +1418,17 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
                 }
             }
         }
-/*
+
         if (compound.hasKey("ArmorItem", 10))
         {
             ItemStack itemstack = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("ArmorItem"));
 
-            if (itemstack != null && SmilodonArmorType.isSmilodonArmor(itemstack.getItem()))
+            if (itemstack != null && HorseArmorType.isHorseArmor(itemstack.getItem()))
             {
                 this.smilodonChest.setInventorySlotContents(1, itemstack);
             }
         }
-*/
+
         if (compound.hasKey("SaddleItem", 10))
         {
             ItemStack itemstack1 = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("SaddleItem"));
@@ -1667,7 +1439,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
             }
         }
 
-        this.updateSmilodonSlots();
+        this.updateHorseSlots();
     }
 
     /**
@@ -1685,11 +1457,15 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
         }
         else
         {
-            EntitySmilodonPopulator entitysmilodon = (EntitySmilodonPopulator)otherAnimal;
+            EntitySmilodonPopulatorkindaWorking entitysmilodon = (EntitySmilodonPopulatorkindaWorking) otherAnimal;
 
             if (this.canMate() && entitysmilodon.canMate())
             {
-                return this == entitysmilodon;
+                //HorseType horsetype = this.getType();
+                //HorseType horsetype1 = entityhorse.getType();
+               EntitySmilodonPopulatorkindaWorking smilodon = this;
+               EntitySmilodonPopulatorkindaWorking smilodon1 = this;
+                return smilodon == smilodon1 || smilodon == this && smilodon1 == this;
             }
             else
             {
@@ -1700,33 +1476,35 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
 
     public EntityAgeable createChild(EntityAgeable ageable)
     {
-        /*EntitySmilodonPopulator entitysmilodon = (EntitySmilodonPopulator)ageable;
-        EntitySmilodonPopulator entitysmilodon1 = new EntitySmilodonPopulator(this.worldObj);
-        SmilodonType smilodontype = this.getType();
-        SmilodonType smilodontype1 = entitysmilodon.getType();
-        SmilodonType smilodontype2 = SmilodonType.HORSE;
+        /*
+        EntitySmilodonPopulatorkindaWorking entitysmilodon = (EntitySmilodonPopulatorkindaWorking)ageable;
+        EntitySmilodonPopulatorkindaWorking entitysmilodon1 = new EntitySmilodonPopulatorkindaWorking(this.worldObj);
+        //HorseType horsetype = this.getType();
+        //HorseType horsetype1 = entityhorse.getType();
+        //HorseType horsetype2 = HorseType.HORSE;
 
-        if (smilodontype == smilodontype1)
+
+        if (horsetype == horsetype1)
         {
-            smilodontype2 = smilodontype;
+            horsetype2 = horsetype;
         }
-        else if (smilodontype == SmilodonType.HORSE && smilodontype1 == SmilodonType.DONKEY || smilodontype == SmilodonType.DONKEY && smilodontype1 == SmilodonType.HORSE)
+        else if (horsetype == HorseType.HORSE && horsetype1 == HorseType.DONKEY || horsetype == HorseType.DONKEY && horsetype1 == HorseType.HORSE)
         {
-            smilodontype2 = SmilodonType.MULE;
+            horsetype2 = HorseType.MULE;
         }
 
-        if (smilodontype2 == SmilodonType.HORSE)
+        if (horsetype2 == HorseType.HORSE)
         {
             int j = this.rand.nextInt(9);
             int i;
 
             if (j < 4)
             {
-                i = this.getSmilodonVariant() & 255;
+                i = this.getHorseVariant() & 255;
             }
             else if (j < 8)
             {
-                i = entitysmilodon.getSmilodonVariant() & 255;
+                i = entityhorse.getHorseVariant() & 255;
             }
             else
             {
@@ -1737,109 +1515,43 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
 
             if (k < 2)
             {
-                i = i | this.getSmilodonVariant() & 65280;
+                i = i | this.getHorseVariant() & 65280;
             }
             else if (k < 4)
             {
-                i = i | entitysmilodon.getSmilodonVariant() & 65280;
+                i = i | entityhorse.getHorseVariant() & 65280;
             }
             else
             {
                 i = i | this.rand.nextInt(5) << 8 & 65280;
             }
 
-            entitysmilodon1.setSmilodonVariant(i);
+            entityhorse1.setHorseVariant(i);
         }
 
-        entitysmilodon1.setType(smilodontype2);
+        entityhorse1.setType(horsetype2);
         double d1 = this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getBaseValue() + ageable.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getBaseValue() + (double)this.getModifiedMaxHealth();
-        entitysmilodon1.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(d1 / 3.0D);
+        entityhorse1.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(d1 / 3.0D);
         double d2 = this.getEntityAttribute(JUMP_STRENGTH).getBaseValue() + ageable.getEntityAttribute(JUMP_STRENGTH).getBaseValue() + this.getModifiedJumpStrength();
-        entitysmilodon1.getEntityAttribute(JUMP_STRENGTH).setBaseValue(d2 / 3.0D);
+        entityhorse1.getEntityAttribute(JUMP_STRENGTH).setBaseValue(d2 / 3.0D);
         double d0 = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getBaseValue() + ageable.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getBaseValue() + this.getModifiedMovementSpeed();
-        entitysmilodon1.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(d0 / 3.0D);
-        return entitysmilodon1;
+        entityhorse1.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(d0 / 3.0D);
+        return entityhorse1;
         */
-        return new EntitySmilodonPopulator(this.worldObj);
+        return new EntitySmilodonPopulatorkindaWorking(this.worldObj);
     }
 
-    /**
-     * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
-     * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
-     */
-    /*
-    @Nullable
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
-    {
-        livingdata = super.onInitialSpawn(difficulty, livingdata);
-        int i = 0;
-        //SmilodonType smilodontype;
 
-        if (livingdata instanceof EntitySmilodonPopulator.GroupData)
-        {
-            //smilodontype = ((EntitySmilodonPopulator.GroupData)livingdata).smilodonType;
-            //i = ((EntitySmilodonPopulator.GroupData)livingdata).smilodonVariant & 255 | this.rand.nextInt(5) << 8;
-        }
-        else
-        {
-            if (this.rand.nextInt(10) == 0)
-            {
-                smilodontype = SmilodonType.DONKEY;
-            }
-            else
-            {
-                int j = this.rand.nextInt(7);
-                int k = this.rand.nextInt(5);
-                //smilodontype = SmilodonType.HORSE;
-                i = j | k << 8;
-            }
 
-            livingdata = new EntitySmilodonPopulator.GroupData(smilodontype, i);
-        }
 
-        //this.setType(smilodontype);
-        //this.setSmilodonVariant(i);
 
-        if (this.rand.nextInt(5) == 0)
-        {
-            this.setGrowingAge(-24000);
-        }
-        else
-        {
-            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue((double)this.getModifiedMaxHealth());
 
-            if (smilodontype == SmilodonType.HORSE)
-            {
-                this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.getModifiedMovementSpeed());
-            }
-            else
-            {
-                this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.17499999701976776D);
-            }
-        }
 
-        if (smilodontype.hasMuleEars())
-        {
-            this.getEntityAttribute(JUMP_STRENGTH).setBaseValue(0.5D);
-        }
-        else
-        {
-            this.getEntityAttribute(JUMP_STRENGTH).setBaseValue(this.getModifiedJumpStrength());
-        }
 
-        this.setHealth(this.getMaxHealth());
-        return livingdata;
-    }
 
-*/
 
-    public void setmode(int i) {
-        this.mode = i;
-    }
-    /**
-     * returns true if all the conditions for steering the entity are met. For pigs, this is true if it is being ridden
-     * by a player and the player is holding a carrot-on-a-stick
-     */
+
+
     public boolean canBeSteered()
     {
         Entity entity = this.getControllingPassenger();
@@ -1905,8 +1617,9 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
     {
     }
 
+
     /**
-     * "Spawns particles for the smilodon entity. par1 tells whether to spawn hearts. If it is false, it spawns smoke."
+     * "Spawns particles for the horse entity. par1 tells whether to spawn hearts. If it is false, it spawns smoke."
      */
     @SideOnly(Side.CLIENT)
     protected void spawnSmilodonParticles(boolean p_110216_1_)
@@ -1970,46 +1683,41 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
     public double getMountedYOffset()
     {
         double d0 = super.getMountedYOffset();
-
-        /*
-        if (this.getType() == SmilodonType.SKELETON)
-
-        {
-            d0 -= 0.1875D;
-        }
-        else if (this.getType() == SmilodonType.DONKEY)
-        {
-            d0 -= 0.25D;
-        }
-        */
-
         return d0;
     }
+
 
     /**
      * Returns randomized max health
      */
+   /*
     private float getModifiedMaxHealth()
     {
         return 15.0F + (float)this.rand.nextInt(8) + (float)this.rand.nextInt(9);
     }
+    */
 
     /**
      * Returns randomized jump strength
      */
+    /*
     private double getModifiedJumpStrength()
     {
         return 0.4000000059604645D + this.rand.nextDouble() * 0.2D + this.rand.nextDouble() * 0.2D + this.rand.nextDouble() * 0.2D;
     }
+    */
 
     /**
      * Returns randomized movement speed
      */
+    /*
     private double getModifiedMovementSpeed()
     {
         return (0.44999998807907104D + this.rand.nextDouble() * 0.3D + this.rand.nextDouble() * 0.3D + this.rand.nextDouble() * 0.3D) * 0.25D;
     }
-/*
+    */
+
+    /*
     public boolean isSkeletonTrap()
     {
         return this.skeletonTrap;
@@ -2031,7 +1739,8 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
             }
         }
     }
-*/
+    */
+
     /**
      * returns true if this entity is by a ladder, false otherwise
      */
@@ -2047,19 +1756,19 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
 
     public boolean replaceItemInInventory(int inventorySlot, @Nullable ItemStack itemStackIn)
     {
-        if (inventorySlot == 499)
+        if (inventorySlot == 499 && this.canBeChested())
         {
             if (itemStackIn == null && this.isChested())
             {
                 this.setChested(false);
-                this.initSmilodonChest();
+                this.initHorseChest();
                 return true;
             }
 
             if (itemStackIn != null && itemStackIn.getItem() == Item.getItemFromBlock(Blocks.CHEST) && !this.isChested())
             {
                 this.setChested(true);
-                this.initSmilodonChest();
+                this.initHorseChest();
                 return true;
             }
         }
@@ -2072,10 +1781,11 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
             {
                 return false;
             }
-         /*   else if (i != 1 || (itemStackIn == null || SmilodonArmorType.isSmilodonArmor(itemStackIn.getItem())) && this.getType().isSmilodon())
+            /*
+            else if (i != 1 || (itemStackIn == null || HorseArmorType.isHorseArmor(itemStackIn.getItem())) && this.getType().isHorse())
             {
                 this.smilodonChest.setInventorySlotContents(i, itemStackIn);
-                this.updateSmilodonSlots();
+                this.updateHorseSlots();
                 return true;
             }
             */
@@ -2102,7 +1812,7 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
 
     /**
      * For vehicles, the first passenger is generally considered the controller and "drives" the vehicle. For example,
-     * Pigs, Smilodons, and Boats are generally "steered" by the controlling passenger.
+     * Pigs, Horses, and Boats are generally "steered" by the controlling passenger.
      */
     @Nullable
     public Entity getControllingPassenger()
@@ -2113,33 +1823,35 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
     /**
      * Get this Entity's EnumCreatureAttribute
      */
+    /*
     public EnumCreatureAttribute getCreatureAttribute()
     {
-        return EnumCreatureAttribute.UNDEFINED;
+        return this.getType().isUndead() ? EnumCreatureAttribute.UNDEAD : EnumCreatureAttribute.UNDEFINED;
     }
+    */
 
     /*
     @Nullable
     protected ResourceLocation getLootTable()
     {
-        return this.lootTable;
+        return this.getLootTable();
     }
-    */
 
-    /*public static class GroupData implements IEntityLivingData
+*/
+    public static class GroupData implements IEntityLivingData
     {
-        //public SmilodonType smilodonType;
-        public int smilodonVariant;
+        public HorseType horseType;
+        public int horseVariant;
 
-        public GroupData(SmilodonType p_i46589_1_, int p_i46589_2_)
+        public GroupData(HorseType p_i46589_1_, int p_i46589_2_)
         {
-            this.smilodonType = p_i46589_1_;
-            this.smilodonVariant = p_i46589_2_;
+            this.horseType = p_i46589_1_;
+            this.horseVariant = p_i46589_2_;
         }
     }
-*/
+
     // FORGE
-    private net.minecraftforge.items.IItemHandler itemHandler = null; // Initialized by initSmilodonChest above.
+    private net.minecraftforge.items.IItemHandler itemHandler = null; // Initialized by initHorseChest above.
 
     @SuppressWarnings("unchecked")
     @Override
@@ -2154,4 +1866,13 @@ public class EntitySmilodonPopulator extends EntityTameable implements IInventor
     {
         return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
+
+
+
+    public boolean canBeChested()
+    {
+        return true;
+    }
+
+
 }
